@@ -73,7 +73,6 @@ getpw(void) { /* only run as root */
 		else
 			die("slock: cannot retrieve password entry (make sure to suid or sgid slock)\n");
 	}
-	endpwent();
 	rval =  pw->pw_passwd;
 
 #if HAVE_SHADOW_H
@@ -82,7 +81,6 @@ getpw(void) { /* only run as root */
 		sp = getspnam(getenv("USER"));
 		if(!sp)
 			die("slock: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
-		endspent();
 		rval = sp->sp_pwdp;
 	}
 #endif
