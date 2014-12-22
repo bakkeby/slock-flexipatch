@@ -261,7 +261,7 @@ main(int argc, char **argv) {
 	int screen;
 
 	if((argc == 2) && !strcmp("-v", argv[1]))
-		die("slock-%s, © 2006-2012 Anselm R Garbe\n", VERSION);
+		die("slock-%s, © 2006-2014 slock engineers\n", VERSION);
 	else if(argc != 1)
 		usage();
 
