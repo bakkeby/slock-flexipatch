@@ -23,6 +23,8 @@
 #include <bsd_auth.h>
 #endif
 
+#include "config.h"
+
 typedef struct {
 	int screen;
 	Window root, win;
