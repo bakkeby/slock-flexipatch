@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <X11/extensions/Xrandr.h>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -41,6 +42,9 @@ typedef struct {
 static Lock **locks;
 static int nscreens;
 static Bool running = True;
+static Bool rr;
+static int rrevbase;
+static int rrerrbase;
 
 static void
 die(const char *errstr, ...)
@@ -179,8 +183,15 @@ readpw(Display *dpy, const char *pws)
 				}
 			}
 			llen = len;
-		}
-		else for (screen = 0; screen < nscreens; screen++)
+		} else if (rr && ev.type == rrevbase + RRScreenChangeNotify) {
+			XRRScreenChangeNotifyEvent *rre = (XRRScreenChangeNotifyEvent*)&ev;
+			for (screen = 0; screen < nscreens; screen++) {
+				if (locks[screen]->win == rre->window) {
+					XResizeWindow(dpy, locks[screen]->win, rre->width, rre->height);
+					XClearWindow(dpy, locks[screen]->win);
+				}
+			}
+		} else for (screen = 0; screen < nscreens; screen++)
 			XRaiseWindow(dpy, locks[screen]->win);
 	}
 }
@@ -236,6 +247,8 @@ lockscreen(Display *dpy, int screen)
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap, &color, &color, 0, 0);
 	XDefineCursor(dpy, lock->win, invisible);
 	XMapRaised(dpy, lock->win);
+	if (rr)
+		XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
 	for (len = 1000; len; len--) {
 		if (XGrabPointer(dpy, lock->root, False, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
 		    GrabModeAsync, GrabModeAsync, None, invisible, CurrentTime) == GrabSuccess)
@@ -295,6 +308,7 @@ main(int argc, char **argv) {
 
 	if (!(dpy = XOpenDisplay(0)))
 		die("slock: cannot open display\n");
+	rr = XRRQueryExtension(dpy, &rrevbase, &rrerrbase);
 	/* Get the number of screens in display "dpy" and blank them all. */
 	nscreens = ScreenCount(dpy);
 	locks = malloc(sizeof(Lock *) * nscreens);
