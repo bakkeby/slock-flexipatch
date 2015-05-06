@@ -26,7 +26,7 @@
 enum {
 	INIT,
 	INPUT,
-	EMPTY,
+	FAILED,
 	NUMCOLS
 };
 
@@ -42,6 +42,7 @@ typedef struct {
 static Lock **locks;
 static int nscreens;
 static Bool running = True;
+static Bool failure = False;
 static Bool rr;
 static int rrevbase;
 static int rrerrbase;
@@ -153,8 +154,10 @@ readpw(Display *dpy, const char *pws)
 #else
 				running = !!strcmp(crypt(passwd, pws), pws);
 #endif
-				if (running)
+				if (running) {
 					XBell(dpy, 100);
+					failure = True;
+				}
 				len = 0;
 				break;
 			case XK_Escape:
@@ -178,7 +181,7 @@ readpw(Display *dpy, const char *pws)
 				}
 			} else if (llen != 0 && len == 0) {
 				for (screen = 0; screen < nscreens; screen++) {
-					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[EMPTY]);
+					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[failure || failonclear ? FAILED : INIT]);
 					XClearWindow(dpy, locks[screen]->win);
 				}
 			}
