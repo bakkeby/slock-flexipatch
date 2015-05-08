@@ -133,7 +133,7 @@ readpw(Display *dpy, const char *pws)
 	while (running && !XNextEvent(dpy, &ev)) {
 		if (ev.type == KeyPress) {
 			buf[0] = 0;
-			num = XLookupString(&ev.xkey, buf, sizeof buf, &ksym, 0);
+			num = XLookupString(&ev.xkey, buf, sizeof(buf), &ksym, 0);
 			if (IsKeypadKey(ksym)) {
 				if (ksym == XK_KP_Enter)
 					ksym = XK_Return;
@@ -168,7 +168,7 @@ readpw(Display *dpy, const char *pws)
 					--len;
 				break;
 			default:
-				if (num && !iscntrl((int) buf[0]) && (len + num < sizeof passwd)) {
+				if (num && !iscntrl((int) buf[0]) && (len + num < sizeof(passwd))) {
 					memcpy(passwd + len, buf, num);
 					len += num;
 				}
