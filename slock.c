@@ -187,7 +187,7 @@ readpw(Display *dpy, const char *pws)
 				break;
 			}
 			color = len ? INPUT : (failure || failonclear ? FAILED : INIT);
-			if (oldc != color) {
+			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
 					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
 					XClearWindow(dpy, locks[screen]->win);
