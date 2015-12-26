@@ -289,7 +289,7 @@ lockscreen(Display *dpy, int screen)
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: slock [-v]\n");
+	fprintf(stderr, "usage: slock [-v|POST_LOCK_CMD]\n");
 	exit(1);
 }
 
@@ -303,7 +303,8 @@ main(int argc, char **argv) {
 
 	if ((argc == 2) && !strcmp("-v", argv[1]))
 		die("slock-%s, © 2006-2015 slock engineers\n", VERSION);
-	else if (argc != 1)
+
+	if ((argc == 2) && !strcmp("-h", argv[1]))
 		usage();
 
 #ifdef __linux__
@@ -337,6 +338,13 @@ main(int argc, char **argv) {
 		free(locks);
 		XCloseDisplay(dpy);
 		return 1;
+	}
+
+	if (argc >= 2 && fork() == 0) {
+		if (dpy)
+			close(ConnectionNumber(dpy));
+		execvp(argv[1], argv+1);
+		die("slock: execvp %s failed: %s\n", argv[1], strerror(errno));
 	}
 
 	/* Everything is now blank. Now wait for the correct password. */
