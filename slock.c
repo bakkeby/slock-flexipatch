@@ -94,20 +94,18 @@ getpw(void)
 	struct passwd *pw;
 
 	errno = 0;
-	pw = getpwuid(getuid());
-	if (!pw) {
+	if (!(pw = getpwuid(getuid()))) {
 		if (errno)
 			die("slock: getpwuid: %s\n", strerror(errno));
 		else
 			die("slock: cannot retrieve password entry\n");
 	}
-	rval =  pw->pw_passwd;
+	rval = pw->pw_passwd;
 
 #if HAVE_SHADOW_H
 	if (rval[0] == 'x' && rval[1] == '\0') {
 		struct spwd *sp;
-		sp = getspnam(getenv("USER"));
-		if (!sp)
+		if (!(sp = getspnam(getenv("USER"))))
 			die("slock: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 		rval = sp->sp_pwdp;
 	}
@@ -180,7 +178,7 @@ readpw(Display *dpy, const char *pws)
 					--len;
 				break;
 			default:
-				if (num && !iscntrl((int) buf[0]) && (len + num < sizeof(passwd))) {
+				if (num && !iscntrl((int)buf[0]) && (len + num < sizeof(passwd))) {
 					memcpy(passwd + len, buf, num);
 					len += num;
 				}
@@ -232,15 +230,10 @@ lockscreen(Display *dpy, int screen)
 	XSetWindowAttributes wa;
 	Cursor invisible;
 
-	if (dpy == NULL || screen < 0)
-		return NULL;
-
-	lock = malloc(sizeof(Lock));
-	if (lock == NULL)
+	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
 		return NULL;
 
 	lock->screen = screen;
-
 	lock->root = RootWindow(dpy, lock->screen);
 
 	for (i = 0; i < NUMCOLS; i++) {
@@ -266,7 +259,7 @@ lockscreen(Display *dpy, int screen)
 			break;
 		usleep(1000);
 	}
-	if (running && (len > 0)) {
+	if (running && len) {
 		for (len = 1000; len; len--) {
 			if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess)
 				break;
@@ -278,8 +271,7 @@ lockscreen(Display *dpy, int screen)
 	if (!running) {
 		unlockscreen(dpy, lock);
 		lock = NULL;
-	}
-	else {
+	} else {
 		XSelectInput(dpy, lock->root, SubstructureNotifyMask);
 	}
 
@@ -323,12 +315,11 @@ main(int argc, char **argv) {
 	rr = XRRQueryExtension(dpy, &rrevbase, &rrerrbase);
 	/* Get the number of screens in display "dpy" and blank them all. */
 	nscreens = ScreenCount(dpy);
-	locks = malloc(sizeof(Lock *) * nscreens);
-	if (locks == NULL)
+	if (!(locks = malloc(sizeof(Lock*) * nscreens)))
 		die("slock: malloc: %s\n", strerror(errno));
 	int nlocks = 0;
 	for (screen = 0; screen < nscreens; screen++) {
-		if ( (locks[screen] = lockscreen(dpy, screen)) != NULL)
+		if ((locks[screen] = lockscreen(dpy, screen)) != NULL)
 			nlocks++;
 	}
 	XSync(dpy, False);
