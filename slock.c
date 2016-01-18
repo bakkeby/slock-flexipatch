@@ -230,7 +230,7 @@ lockscreen(Display *dpy, int screen)
 	XSetWindowAttributes wa;
 	Cursor invisible;
 
-	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
+	if (!running || dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
 		return NULL;
 
 	lock->screen = screen;
@@ -253,29 +253,31 @@ lockscreen(Display *dpy, int screen)
 	XMapRaised(dpy, lock->win);
 	if (rr)
 		XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
+
+	/* Try to grab mouse pointer *and* keyboard, else fail the lock */
 	for (len = 1000; len; len--) {
 		if (XGrabPointer(dpy, lock->root, False, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
 		    GrabModeAsync, GrabModeAsync, None, invisible, CurrentTime) == GrabSuccess)
 			break;
 		usleep(1000);
 	}
-	if (running && len) {
+	if (!len) {
+		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
+	} else {
 		for (len = 1000; len; len--) {
-			if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess)
-				break;
+			if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess) {
+				/* everything fine, we grabbed both inputs */
+				XSelectInput(dpy, lock->root, SubstructureNotifyMask);
+				return lock;
+			}
 			usleep(1000);
 		}
+		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
 	}
-
-	running &= (len > 0);
-	if (!running) {
-		unlockscreen(dpy, lock);
-		lock = NULL;
-	} else {
-		XSelectInput(dpy, lock->root, SubstructureNotifyMask);
-	}
-
-	return lock;
+	/* grabbing one of the inputs failed */
+	running = 0;
+	unlockscreen(dpy, lock);
+	return NULL;
 }
 
 static void
