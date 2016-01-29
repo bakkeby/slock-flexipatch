@@ -81,7 +81,7 @@ dontkillme(void)
 		die("buffer too small\n");
 
 	if (fd < 0 || write(fd, value, length) != length || close(fd) != 0)
-		die("cannot disable the out-of-memory killer for this process\n");
+		die("cannot disable the out-of-memory killer for this process (make sure to suid or sgid slock)\n");
 }
 #endif
 
