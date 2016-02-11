@@ -1,5 +1,5 @@
 # slock version
-VERSION = 1.2
+VERSION = 1.3
 
 # Customize below to fit your system
 
