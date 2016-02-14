@@ -60,28 +60,20 @@ die(const char *errstr, ...)
 
 #ifdef __linux__
 #include <fcntl.h>
-#include <linux/oom.h>
 
 static void
 dontkillme(void)
 {
 	int fd;
-	int length;
-	char value[64];
 
 	fd = open("/proc/self/oom_score_adj", O_WRONLY);
-	if (fd < 0 && errno == ENOENT)
+	if (fd < 0 && errno == ENOENT) {
 		return;
-
-	/* convert OOM_SCORE_ADJ_MIN to string for writing */
-	length = snprintf(value, sizeof(value), "%d\n", OOM_SCORE_ADJ_MIN);
-
-	/* bail on truncation */
-	if (length >= sizeof(value))
-		die("buffer too small\n");
-
-	if (fd < 0 || write(fd, value, length) != length || close(fd) != 0)
-		die("cannot disable the out-of-memory killer for this process (make sure to suid or sgid slock)\n");
+	}
+	if (fd < 0 || write(fd, "-1000\n", (sizeof("-1000\n") - 1)) !=
+	    (sizeof("-1000\n") - 1) || close(fd) != 0) {
+		die("can't tame the oom-killer. is suid or sgid set?\n");
+	}
 }
 #endif
 
