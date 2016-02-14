@@ -1,6 +1,8 @@
 static const char *colorname[NUMCOLS] = {
 	"black",     /* after initialization */
 	"#005577",   /* during input */
-	"#CC3333",   /* failed/cleared the input */
+	"#CC3333",   /* wrong password */
 };
-static const Bool failonclear = True;
+
+/* treat a cleared input like a wrong password */
+static const int failonclear = 1;
