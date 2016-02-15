@@ -3,17 +3,27 @@
 slock \- simple X screen locker
 .SH SYNOPSIS
 .B slock
-.RB [
-.IR cmd
-]
+.RB [ \-v
+|
+.IR cmd ]
 .SH DESCRIPTION
 .B slock
 is an X screen locker. If provided,
 .IR cmd
 is executed after the screen has been locked.
+.SH OPTIONS
+.TP
+.B \-v
+prints version information to stdout, then exits.
 .SH EXAMPLES
 $ slock /usr/sbin/s2ram
 .SH CUSTOMIZATION
 .B slock
 can be customized by creating a custom config.h and (re)compiling the source
 code. This keeps it fast, secure and simple.
+.SH AUTHORS
+See the LICENSE file for the authors.
+.SH LICENSE
+See the LICENSE file for the terms of redistribution.
+.SH BUGS
+Please report them.

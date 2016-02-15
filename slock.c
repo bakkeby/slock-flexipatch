@@ -273,14 +273,27 @@ lockscreen(Display *dpy, int screen)
 	return NULL;
 }
 
-int
-main(int argc, char **argv)
+static void
+usage(void)
 {
+	fprintf(stderr, "usage: slock [-v|POST_LOCK_CMD]\n");
+	exit(1);
+}
+
+int
+main(int argc, char **argv) {
 #ifndef HAVE_BSD_AUTH
 	const char *pws;
 #endif
 	Display *dpy;
 	int screen;
+
+	if ((argc >= 2) && !strcmp("-v", argv[1]))
+		die("version %s, © 2006-2016 slock engineers\n", VERSION);
+
+	/* treat first argument starting with a '-' as option */
+	if ((argc >= 2) && argv[1][0] == '-')
+		usage();
 
 #ifdef __linux__
 	dontkillme();
