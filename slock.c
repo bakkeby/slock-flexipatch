@@ -46,15 +46,14 @@ static Bool failure = False;
 static Bool rr;
 static int rrevbase;
 static int rrerrbase;
-static char *argv0;
 
 static void
 die(const char *errstr, ...)
 {
 	va_list ap;
 
+	fputs("slock: ", stderr);
 	va_start(ap, errstr);
-	fprintf(stderr, "%s: ", argv0);
 	vfprintf(stderr, errstr, ap);
 	va_end(ap);
 	exit(1);
@@ -256,7 +255,7 @@ lockscreen(Display *dpy, int screen)
 		usleep(1000);
 	}
 	if (!len) {
-		fprintf(stderr, "unable to grab mouse pointer for screen %d\n", screen);
+		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
 	} else {
 		for (len = 1000; len; len--) {
 			if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess) {
@@ -266,7 +265,7 @@ lockscreen(Display *dpy, int screen)
 			}
 			usleep(1000);
 		}
-		fprintf(stderr, "unable to grab keyboard for screen %d\n", screen);
+		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
 	}
 	/* grabbing one of the inputs failed */
 	running = 0;
@@ -282,8 +281,6 @@ main(int argc, char **argv)
 #endif
 	Display *dpy;
 	int screen;
-
-	argv0 = argv[0], argc--, argv++;
 
 #ifdef __linux__
 	dontkillme();
@@ -317,11 +314,11 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (argc >= 1 && fork() == 0) {
+	if (argc >= 2 && fork() == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
-		execvp(argv[0], argv);
-		die("execvp %s failed: %s\n", argv[0], strerror(errno));
+		execvp(argv[1], argv+1);
+		die("execvp %s failed: %s\n", argv[1], strerror(errno));
 	}
 
 	/* Everything is now blank. Now wait for the correct password. */
