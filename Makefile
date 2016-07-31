@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = slock.c
+SRC = slock.c ${COMPATSRC}
 OBJ = ${SRC:.c=.o}
 
 all: options slock
@@ -35,8 +35,8 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p slock-${VERSION}
-	@cp -R LICENSE Makefile README config.def.h config.mk ${SRC} slock.1 \
-		slock-${VERSION}
+	@cp -R LICENSE Makefile README config.def.h config.mk ${SRC} \
+		explicit_bzero.c slock.1 slock-${VERSION}
 	@tar -cf slock-${VERSION}.tar slock-${VERSION}
 	@gzip slock-${VERSION}.tar
 	@rm -rf slock-${VERSION}

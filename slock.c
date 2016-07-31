@@ -23,6 +23,8 @@
 #include <bsd_auth.h>
 #endif
 
+#include "util.h"
+
 enum {
 	INIT,
 	INPUT,
@@ -135,7 +137,7 @@ readpw(Display *dpy, const char *pws)
 	 * timeout. */
 	while (running && !XNextEvent(dpy, &ev)) {
 		if (ev.type == KeyPress) {
-			buf[0] = 0;
+			explicit_bzero(&buf, sizeof(buf));
 			num = XLookupString(&ev.xkey, buf, sizeof(buf), &ksym, 0);
 			if (IsKeypadKey(ksym)) {
 				if (ksym == XK_KP_Enter)
@@ -161,14 +163,16 @@ readpw(Display *dpy, const char *pws)
 					XBell(dpy, 100);
 					failure = True;
 				}
+				explicit_bzero(&passwd, sizeof(passwd));
 				len = 0;
 				break;
 			case XK_Escape:
+				explicit_bzero(&passwd, sizeof(passwd));
 				len = 0;
 				break;
 			case XK_BackSpace:
 				if (len)
-					--len;
+					passwd[len--] = 0;
 				break;
 			default:
 				if (num && !iscntrl((int)buf[0]) && (len + num < sizeof(passwd))) {
