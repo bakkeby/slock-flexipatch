@@ -23,7 +23,10 @@
 #include <bsd_auth.h>
 #endif
 
+#include "arg.h"
 #include "util.h"
+
+char *argv0;
 
 enum {
 	INIT,
@@ -54,7 +57,6 @@ die(const char *errstr, ...)
 {
 	va_list ap;
 
-	fputs("slock: ", stderr);
 	va_start(ap, errstr);
 	vfprintf(stderr, errstr, ap);
 	va_end(ap);
@@ -280,8 +282,7 @@ lockscreen(Display *dpy, int screen)
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: slock [-v|POST_LOCK_CMD]\n");
-	exit(1);
+	die("usage: slock [-v | cmd [arg ...]]\n");
 }
 
 int
@@ -290,64 +291,86 @@ main(int argc, char **argv) {
 	const char *pws;
 #endif
 	Display *dpy;
-	int screen;
+	int s, nlocks;
 
-	if ((argc >= 2) && !strcmp("-v", argv[1]))
-		die("version %s, © 2006-2016 slock engineers\n", VERSION);
-
-	/* treat first argument starting with a '-' as option */
-	if ((argc >= 2) && argv[1][0] == '-')
+	ARGBEGIN {
+	case 'v':
+		fprintf(stderr, "slock-"VERSION"\n");
+		return 0;
+	default:
 		usage();
+	} ARGEND
 
 #ifdef __linux__
 	dontkillme();
 #endif
 
-	if (!getpwuid(getuid()))
-		die("no passwd entry for you\n");
+	/* Check if the current user has a password entry */
+	errno = 0;
+	if (!getpwuid(getuid())) {
+		if (errno == 0)
+			die("slock: no password entry for current user\n");
+		else
+			die("slock: getpwuid: %s\n", strerror(errno));
+	}
 
 #ifndef HAVE_BSD_AUTH
 	pws = getpw();
 #endif
 
-	if (!(dpy = XOpenDisplay(0)))
-		die("cannot open display\n");
+	if (!(dpy = XOpenDisplay(NULL)))
+		die("slock: cannot open display\n");
+
+	/* check for Xrandr support */
 	rr = XRRQueryExtension(dpy, &rrevbase, &rrerrbase);
-	/* Get the number of screens in display "dpy" and blank them all. */
+
+	/* get number of screens in display "dpy" and blank them */
 	nscreens = ScreenCount(dpy);
-	if (!(locks = malloc(sizeof(Lock*) * nscreens)))
-		die("Out of memory.\n");
-	int nlocks = 0;
-	for (screen = 0; screen < nscreens; screen++) {
-		if ((locks[screen] = lockscreen(dpy, screen)) != NULL)
+	if (!(locks = malloc(sizeof(Lock *) * nscreens))) {
+		XCloseDisplay(dpy);
+		die("slock: out of memory\n");
+	}
+	for (nlocks = 0, s = 0; s < nscreens; s++) {
+		if ((locks[s] = lockscreen(dpy, s)) != NULL)
 			nlocks++;
 	}
-	XSync(dpy, False);
+	XSync(dpy, 0);
 
-	/* Did we actually manage to lock something? */
-	if (nlocks == 0) { /* nothing to protect */
+	/* did we actually manage to lock anything? */
+	if (nlocks == 0) {
+		/* nothing to protect */
 		free(locks);
 		XCloseDisplay(dpy);
 		return 1;
 	}
 
-	if (argc >= 2 && fork() == 0) {
-		if (dpy)
-			close(ConnectionNumber(dpy));
-		execvp(argv[1], argv+1);
-		die("execvp %s failed: %s\n", argv[1], strerror(errno));
+	/* run post-lock command */
+	if (argc > 0) {
+		switch (fork()) {
+		case -1:
+			free(locks);
+			XCloseDisplay(dpy);
+			die("slock: fork failed: %s\n", strerror(errno));
+		case 0:
+			if (close(ConnectionNumber(dpy)) < 0)
+				die("slock: close: %s\n", strerror(errno));
+			execvp(argv[0], argv);
+			fprintf(stderr, "slock: execvp %s: %s\n", argv[0],
+			        strerror(errno));
+			_exit(1);
+		}
 	}
 
-	/* Everything is now blank. Now wait for the correct password. */
+	/* everything is now blank. Wait for the correct password */
 #ifdef HAVE_BSD_AUTH
 	readpw(dpy);
 #else
 	readpw(dpy, pws);
 #endif
 
-	/* Password ok, unlock everything and quit. */
-	for (screen = 0; screen < nscreens; screen++)
-		unlockscreen(dpy, locks[screen]);
+	/* password ok, unlock everything and quit */
+	for (s = 0; s < nscreens; s++)
+		unlockscreen(dpy, locks[s]);
 
 	free(locks);
 	XCloseDisplay(dpy);
