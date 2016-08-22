@@ -65,19 +65,27 @@ die(const char *errstr, ...)
 
 #ifdef __linux__
 #include <fcntl.h>
+#include <linux/oom.h>
 
 static void
 dontkillme(void)
 {
-	int fd;
+	FILE *f;
+	const char oomfile[] = "/proc/self/oom_score_adj";
 
-	fd = open("/proc/self/oom_score_adj", O_WRONLY);
-	if (fd < 0 && errno == ENOENT) {
-		return;
+	if (!(f = fopen(oomfile, "w"))) {
+		if (errno == ENOENT)
+			return;
+		die("slock: fopen %s: %s\n", oomfile, strerror(errno));
 	}
-	if (fd < 0 || write(fd, "-1000\n", (sizeof("-1000\n") - 1)) !=
-	    (sizeof("-1000\n") - 1) || close(fd) != 0) {
-		die("can't tame the oom-killer. is suid or sgid set?\n");
+	fprintf(f, "%d", OOM_SCORE_ADJ_MIN);
+	if (fclose(f)) {
+		if (errno == EACCES)
+			die("slock: unable to disable OOM killer. "
+			    "suid or sgid set?\n");
+		else
+			die("slock: fclose %s: %s\n", oomfile,
+			    strerror(errno));
 	}
 }
 #endif
