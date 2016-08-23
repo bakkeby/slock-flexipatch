@@ -282,7 +282,7 @@ lockscreen(Display *dpy, int screen)
 static void
 usage(void)
 {
-	die("usage: slock [-v | cmd [arg ...]]\n");
+	die("usage: slock [-v] [cmd [arg ...]]\n");
 }
 
 int

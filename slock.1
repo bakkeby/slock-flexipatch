@@ -1,29 +1,27 @@
-.TH SLOCK 1 slock\-VERSION
-.SH NAME
-slock \- simple X screen locker
-.SH SYNOPSIS
-.B slock
-.RB [ \-v
-|
-.IR cmd ]
-.SH DESCRIPTION
-.B slock
-is an X screen locker. If provided,
-.IR cmd
+.Dd 2016-08-23
+.Dt SLOCK 1
+.Sh NAME
+.Nm slock
+.Nd simple X screen locker
+.Sh SYNOPSIS
+.Nm
+.Op Fl v
+.Op Ar cmd Op Ar arg ...
+.Sh DESCRIPTION
+.Nm
+is a simple X screen locker. If provided,
+.Ar cmd Op Ar arg ...
 is executed after the screen has been locked.
-.SH OPTIONS
-.TP
-.B \-v
-prints version information to stdout, then exits.
-.SH EXAMPLES
-$ slock /usr/sbin/s2ram
-.SH CUSTOMIZATION
-.B slock
-can be customized by creating a custom config.h and (re)compiling the source
-code. This keeps it fast, secure and simple.
-.SH AUTHORS
-See the LICENSE file for the authors.
-.SH LICENSE
-See the LICENSE file for the terms of redistribution.
-.SH BUGS
-Please report them.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl v
+Print version information to stdout and exit.
+.El
+.Sh EXAMPLES
+$
+.Nm
+/usr/sbin/s2ram
+.Sh CUSTOMIZATION
+.Nm
+can be customized by creating a custom config.h from config.def.h and
+(re)compiling the source code. This keeps it fast, secure and simple.
