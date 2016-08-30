@@ -222,7 +222,6 @@ static Lock *
 lockscreen(Display *dpy, int screen)
 {
 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
-	unsigned int len;
 	int i;
 	Lock *lock;
 	XColor color, dummy;
@@ -249,34 +248,31 @@ lockscreen(Display *dpy, int screen)
 	lock->pmap = XCreateBitmapFromData(dpy, lock->win, curs, 8, 8);
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap, &color, &color, 0, 0);
 	XDefineCursor(dpy, lock->win, invisible);
+
+	/* Try to grab mouse pointer *and* keyboard, else fail the lock */
+	if (XGrabPointer(dpy, lock->root, False, ButtonPressMask |
+	    ButtonReleaseMask | PointerMotionMask, GrabModeAsync, GrabModeAsync,
+	    None, invisible, CurrentTime) != GrabSuccess) {
+		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
+		running = 0;
+		unlockscreen(dpy, lock);
+		return NULL;
+	}
+
+	if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync,
+	    CurrentTime) != GrabSuccess) {
+		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
+		running = 0;
+		unlockscreen(dpy, lock);
+		return NULL;
+	}
+
 	XMapRaised(dpy, lock->win);
 	if (rr)
 		XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
 
-	/* Try to grab mouse pointer *and* keyboard, else fail the lock */
-	for (len = 1000; len; len--) {
-		if (XGrabPointer(dpy, lock->root, False, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
-		    GrabModeAsync, GrabModeAsync, None, invisible, CurrentTime) == GrabSuccess)
-			break;
-		usleep(1000);
-	}
-	if (!len) {
-		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
-	} else {
-		for (len = 1000; len; len--) {
-			if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess) {
-				/* everything fine, we grabbed both inputs */
-				XSelectInput(dpy, lock->root, SubstructureNotifyMask);
-				return lock;
-			}
-			usleep(1000);
-		}
-		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
-	}
-	/* grabbing one of the inputs failed */
-	running = 0;
-	unlockscreen(dpy, lock);
-	return NULL;
+	XSelectInput(dpy, lock->root, SubstructureNotifyMask);
+	return lock;
 }
 
 static void
