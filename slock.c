@@ -157,7 +157,7 @@ readpw(Display *dpy, const char *pws)
 			case XK_Return:
 				passwd[len] = 0;
 #ifdef HAVE_BSD_AUTH
-				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
+				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
 #else
 				running = !!strcmp(crypt(passwd, pws), pws);
 #endif
