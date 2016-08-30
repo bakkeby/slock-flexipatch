@@ -123,7 +123,7 @@ readpw(Display *dpy)
 readpw(Display *dpy, const char *pws)
 #endif
 {
-	char buf[32], passwd[256];
+	char buf[32], passwd[256], *encrypted;
 	int num, screen;
 	unsigned int len, color;
 	KeySym ksym;
@@ -159,7 +159,11 @@ readpw(Display *dpy, const char *pws)
 #ifdef HAVE_BSD_AUTH
 				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
 #else
-				running = !!strcmp(crypt(passwd, pws), pws);
+				errno = 0;
+				if (!(encrypted = crypt(passwd, pws)))
+					fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
+				else
+					running = !!strcmp(encrypted, pws);
 #endif
 				if (running) {
 					XBell(dpy, 100);
@@ -312,6 +316,8 @@ main(int argc, char **argv) {
 
 #ifndef HAVE_BSD_AUTH
 	pws = getpw();
+	if (strlen(pws) < 2)
+		die("slock: failed to get user password hash.\n");
 #endif
 
 	if (!(dpy = XOpenDisplay(NULL)))
