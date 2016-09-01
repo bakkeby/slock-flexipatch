@@ -234,6 +234,11 @@ unlockscreen(Display *dpy, Lock *lock)
 static void
 cleanup(Display *dpy)
 {
+	int s;
+
+	for (s = 0; s < nscreens; ++s)
+		unlockscreen(dpy, locks[s]);
+
 	free(locks);
 	XCloseDisplay(dpy);
 }
@@ -305,8 +310,6 @@ lockscreen(Display *dpy, int screen)
 		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
 	if (kbgrab != GrabSuccess)
 		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
-	running = 0;
-	unlockscreen(dpy, lock);
 	return NULL;
 }
 
@@ -359,19 +362,21 @@ main(int argc, char **argv) {
 
 	/* get number of screens in display "dpy" and blank them */
 	nscreens = ScreenCount(dpy);
-	if (!(locks = malloc(sizeof(Lock *) * nscreens))) {
+	if (!(locks = calloc(nscreens, sizeof(Lock *)))) {
 		XCloseDisplay(dpy);
 		die("slock: out of memory\n");
 	}
 	for (nlocks = 0, s = 0; s < nscreens; s++) {
 		if ((locks[s] = lockscreen(dpy, s)) != NULL)
 			nlocks++;
+		else
+			break;
 	}
 	XSync(dpy, 0);
 
-	/* did we actually manage to lock anything? */
-	if (nlocks == 0) {
-		/* nothing to protect */
+	/* did we manage to lock everything? */
+	if (nlocks != nscreens) {
+		running = 0;
 		cleanup(dpy);
 		return 1;
 	}
@@ -400,9 +405,6 @@ main(int argc, char **argv) {
 #endif
 
 	/* password ok, unlock everything and quit */
-	for (s = 0; s < nscreens; s++)
-		unlockscreen(dpy, locks[s]);
-
 	cleanup(dpy);
 
 	return 0;
