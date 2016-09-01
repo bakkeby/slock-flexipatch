@@ -46,8 +46,6 @@ typedef struct {
 
 static Lock **locks;
 static int nscreens;
-static Bool running = True;
-static Bool failure = False;
 static Bool rr;
 static int rrevbase;
 static int rrerrbase;
@@ -132,14 +130,15 @@ readpw(Display *dpy, const char *pws)
 #endif
 {
 	char buf[32], passwd[256], *encrypted;
-	int num, screen;
+	int num, screen, running, failure;
 	unsigned int len, color;
 	KeySym ksym;
 	XEvent ev;
 	static int oldc = INIT;
 
 	len = 0;
-	running = True;
+	running = 1;
+	failure = 0;
 
 	/* As "slock" stands for "Simple X display locker", the DPMS settings
 	 * had been removed and you can set it with "xset" or some other
@@ -253,7 +252,7 @@ lockscreen(Display *dpy, int screen)
 	XSetWindowAttributes wa;
 	Cursor invisible;
 
-	if (!running || dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
+	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
 		return NULL;
 
 	lock->screen = screen;
@@ -376,7 +375,6 @@ main(int argc, char **argv) {
 
 	/* did we manage to lock everything? */
 	if (nlocks != nscreens) {
-		running = 0;
 		cleanup(dpy);
 		return 1;
 	}
