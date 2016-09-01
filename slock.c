@@ -223,6 +223,7 @@ unlockscreen(Display *dpy, Lock *lock)
 		return;
 
 	XUngrabPointer(dpy, CurrentTime);
+	XUngrabKeyboard(dpy, CurrentTime);
 	XFreeColors(dpy, DefaultColormap(dpy, lock->screen), lock->colors, NUMCOLS, 0);
 	XFreePixmap(dpy, lock->pmap);
 	XDestroyWindow(dpy, lock->win);
@@ -241,7 +242,7 @@ static Lock *
 lockscreen(Display *dpy, int screen)
 {
 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
-	int i;
+	int i, ptgrab, kbgrab;
 	Lock *lock;
 	XColor color, dummy;
 	XSetWindowAttributes wa;
@@ -268,30 +269,45 @@ lockscreen(Display *dpy, int screen)
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap, &color, &color, 0, 0);
 	XDefineCursor(dpy, lock->win, invisible);
 
-	/* Try to grab mouse pointer *and* keyboard, else fail the lock */
-	if (XGrabPointer(dpy, lock->root, False, ButtonPressMask |
-	    ButtonReleaseMask | PointerMotionMask, GrabModeAsync, GrabModeAsync,
-	    None, invisible, CurrentTime) != GrabSuccess) {
+	/* Try to grab mouse pointer *and* keyboard for 600ms, else fail the lock */
+	for (i = 6, ptgrab = kbgrab = -1; i; --i) {
+		if (ptgrab != GrabSuccess) {
+			ptgrab = XGrabPointer(dpy, lock->root, False,
+			         ButtonPressMask | ButtonReleaseMask |
+			         PointerMotionMask, GrabModeAsync,
+			         GrabModeAsync, None, invisible, CurrentTime);
+		}
+		if (kbgrab != GrabSuccess) {
+			kbgrab = XGrabKeyboard(dpy, lock->root, True,
+			         GrabModeAsync, GrabModeAsync, CurrentTime);
+		}
+
+		/* input is grabbed: we can lock the screen */
+		if (ptgrab == GrabSuccess && kbgrab == GrabSuccess) {
+			XMapRaised(dpy, lock->win);
+			if (rr)
+				XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
+
+			XSelectInput(dpy, lock->root, SubstructureNotifyMask);
+			return lock;
+		}
+
+		/* retry on AlreadyGrabbed but fail on other errors */
+		if ((ptgrab != AlreadyGrabbed && ptgrab != GrabSuccess) ||
+		    (kbgrab != AlreadyGrabbed && kbgrab != GrabSuccess))
+			break;
+
+		usleep(100000);
+	}
+
+	/* we couldn't grab all input: fail out */
+	if (ptgrab != GrabSuccess)
 		fprintf(stderr, "slock: unable to grab mouse pointer for screen %d\n", screen);
-		running = 0;
-		unlockscreen(dpy, lock);
-		return NULL;
-	}
-
-	if (XGrabKeyboard(dpy, lock->root, True, GrabModeAsync, GrabModeAsync,
-	    CurrentTime) != GrabSuccess) {
+	if (kbgrab != GrabSuccess)
 		fprintf(stderr, "slock: unable to grab keyboard for screen %d\n", screen);
-		running = 0;
-		unlockscreen(dpy, lock);
-		return NULL;
-	}
-
-	XMapRaised(dpy, lock->win);
-	if (rr)
-		XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
-
-	XSelectInput(dpy, lock->root, SubstructureNotifyMask);
-	return lock;
+	running = 0;
+	unlockscreen(dpy, lock);
+	return NULL;
 }
 
 static void
