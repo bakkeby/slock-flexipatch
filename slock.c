@@ -230,6 +230,13 @@ unlockscreen(Display *dpy, Lock *lock)
 	free(lock);
 }
 
+static void
+cleanup(Display *dpy)
+{
+	free(locks);
+	XCloseDisplay(dpy);
+}
+
 static Lock *
 lockscreen(Display *dpy, int screen)
 {
@@ -349,8 +356,7 @@ main(int argc, char **argv) {
 	/* did we actually manage to lock anything? */
 	if (nlocks == 0) {
 		/* nothing to protect */
-		free(locks);
-		XCloseDisplay(dpy);
+		cleanup(dpy);
 		return 1;
 	}
 
@@ -358,8 +364,7 @@ main(int argc, char **argv) {
 	if (argc > 0) {
 		switch (fork()) {
 		case -1:
-			free(locks);
-			XCloseDisplay(dpy);
+			cleanup(dpy);
 			die("slock: fork failed: %s\n", strerror(errno));
 		case 0:
 			if (close(ConnectionNumber(dpy)) < 0)
@@ -382,8 +387,7 @@ main(int argc, char **argv) {
 	for (s = 0; s < nscreens; s++)
 		unlockscreen(dpy, locks[s]);
 
-	free(locks);
-	XCloseDisplay(dpy);
+	cleanup(dpy);
 
 	return 0;
 }
