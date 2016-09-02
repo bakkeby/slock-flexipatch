@@ -274,7 +274,7 @@ lockscreen(Display *dpy, int screen)
 	XDefineCursor(dpy, lock->win, invisible);
 
 	/* Try to grab mouse pointer *and* keyboard for 600ms, else fail the lock */
-	for (i = 6, ptgrab = kbgrab = -1; i; --i) {
+	for (i = 0, ptgrab = kbgrab = -1; i < 6; i++) {
 		if (ptgrab != GrabSuccess) {
 			ptgrab = XGrabPointer(dpy, lock->root, False,
 			         ButtonPressMask | ButtonReleaseMask |
