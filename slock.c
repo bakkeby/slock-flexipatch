@@ -99,9 +99,9 @@ getpw(void)
 	errno = 0;
 	if (!(pw = getpwuid(getuid()))) {
 		if (errno)
-			die("getpwuid: %s\n", strerror(errno));
+			die("slock: getpwuid: %s\n", strerror(errno));
 		else
-			die("cannot retrieve password entry\n");
+			die("slock: cannot retrieve password entry\n");
 	}
 	rval = pw->pw_passwd;
 
@@ -109,7 +109,7 @@ getpw(void)
 	if (rval[0] == 'x' && rval[1] == '\0') {
 		struct spwd *sp;
 		if (!(sp = getspnam(getenv("USER"))))
-			die("cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
+			die("slock: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 		rval = sp->sp_pwdp;
 	}
 #endif
@@ -117,7 +117,7 @@ getpw(void)
 	/* drop privileges */
 	if (geteuid() == 0 &&
 	    ((getegid() != pw->pw_gid && setgid(pw->pw_gid) < 0) || setuid(pw->pw_uid) < 0))
-		die("cannot drop privileges\n");
+		die("slock: cannot drop privileges\n");
 	return rval;
 }
 #endif
