@@ -18,11 +18,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#if HAVE_BSD_AUTH
-#include <login_cap.h>
-#include <bsd_auth.h>
-#endif
-
 #include "arg.h"
 #include "util.h"
 
@@ -88,7 +83,6 @@ dontkillme(void)
 }
 #endif
 
-#ifndef HAVE_BSD_AUTH
 /* only run as root */
 static const char *
 getpw(void)
@@ -96,6 +90,7 @@ getpw(void)
 	const char *rval;
 	struct passwd *pw;
 
+	/* Check if the current user has a password entry */
 	errno = 0;
 	if (!(pw = getpwuid(getuid()))) {
 		if (errno)
@@ -109,10 +104,20 @@ getpw(void)
 	if (rval[0] == 'x' && rval[1] == '\0') {
 		struct spwd *sp;
 		if (!(sp = getspnam(getenv("USER"))))
-			die("slock: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
+			die("slock: getspnam: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 		rval = sp->sp_pwdp;
 	}
-#endif
+#else
+	if (rval[0] == '*' && rval[1] == '\0') {
+#ifdef __OpenBSD__
+		if (!(pw = getpwnam_shadow(getenv("USER"))))
+			die("slock: getpwnam_shadow: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
+		rval = pw->pw_passwd;
+#else
+		die("slock: getpwuid: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
+#endif /* __OpenBSD__ */
+	}
+#endif /* HAVE_SHADOW_H */
 
 	/* drop privileges */
 	if (geteuid() == 0 &&
@@ -120,14 +125,9 @@ getpw(void)
 		die("slock: cannot drop privileges\n");
 	return rval;
 }
-#endif
 
 static void
-#ifdef HAVE_BSD_AUTH
-readpw(Display *dpy)
-#else
 readpw(Display *dpy, const char *pws)
-#endif
 {
 	char buf[32], passwd[256], *encrypted;
 	int num, screen, running, failure;
@@ -163,15 +163,11 @@ readpw(Display *dpy, const char *pws)
 			switch (ksym) {
 			case XK_Return:
 				passwd[len] = 0;
-#ifdef HAVE_BSD_AUTH
-				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
-#else
 				errno = 0;
 				if (!(encrypted = crypt(passwd, pws)))
 					fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
 				else
 					running = !!strcmp(encrypted, pws);
-#endif
 				if (running) {
 					XBell(dpy, 100);
 					failure = True;
@@ -320,9 +316,7 @@ usage(void)
 
 int
 main(int argc, char **argv) {
-#ifndef HAVE_BSD_AUTH
 	const char *pws;
-#endif
 	Display *dpy;
 	int s, nlocks;
 
@@ -338,20 +332,9 @@ main(int argc, char **argv) {
 	dontkillme();
 #endif
 
-	/* Check if the current user has a password entry */
-	errno = 0;
-	if (!getpwuid(getuid())) {
-		if (errno == 0)
-			die("slock: no password entry for current user\n");
-		else
-			die("slock: getpwuid: %s\n", strerror(errno));
-	}
-
-#ifndef HAVE_BSD_AUTH
 	pws = getpw();
 	if (strlen(pws) < 2)
 		die("slock: failed to get user password hash.\n");
-#endif
 
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("slock: cannot open display\n");
@@ -396,11 +379,7 @@ main(int argc, char **argv) {
 	}
 
 	/* everything is now blank. Wait for the correct password */
-#ifdef HAVE_BSD_AUTH
-	readpw(dpy);
-#else
 	readpw(dpy, pws);
-#endif
 
 	/* password ok, unlock everything and quit */
 	cleanup(dpy);

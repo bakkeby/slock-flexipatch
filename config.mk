@@ -20,16 +20,11 @@ CFLAGS = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
 LDFLAGS = -s ${LIBS}
 COMPATSRC = explicit_bzero.c
 
-# On *BSD remove -DHAVE_SHADOW_H from CPPFLAGS and add -DHAVE_BSD_AUTH
+# On *BSD remove -DHAVE_SHADOW_H from CPPFLAGS
 # On OpenBSD and Darwin remove -lcrypt from LIBS
 #LIBS = -L/usr/lib -lc -L${X11LIB} -lX11 -lXext -lXrandr
-#CPPFLAGS = -DVERSION=\"${VERSION}\" -DHAVE_BSD_AUTH -D_BSD_SOURCE
+#CPPFLAGS = -DVERSION=\"${VERSION}\" -D_BSD_SOURCE
 #COMPATSRC =
 
 # compiler and linker
 CC = cc
-
-# Install mode. On BSD systems MODE=2755 and GROUP=auth
-# On others MODE=4755 and GROUP=root
-#MODE=2755
-#GROUP=auth
