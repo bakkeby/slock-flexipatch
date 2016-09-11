@@ -85,9 +85,9 @@ dontkillme(void)
 #endif
 
 static const char *
-getpw(void)
+gethash(void)
 {
-	const char *rval;
+	const char *hash;
 	struct passwd *pw;
 
 	/* Check if the current user has a password entry */
@@ -98,35 +98,35 @@ getpw(void)
 		else
 			die("slock: cannot retrieve password entry\n");
 	}
-	rval = pw->pw_passwd;
+	hash = pw->pw_passwd;
 
 #if HAVE_SHADOW_H
-	if (rval[0] == 'x' && rval[1] == '\0') {
+	if (hash[0] == 'x' && hash[1] == '\0') {
 		struct spwd *sp;
 		if (!(sp = getspnam(getenv("USER"))))
 			die("slock: getspnam: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
-		rval = sp->sp_pwdp;
+		hash = sp->sp_pwdp;
 	}
 #else
-	if (rval[0] == '*' && rval[1] == '\0') {
+	if (hash[0] == '*' && hash[1] == '\0') {
 #ifdef __OpenBSD__
 		if (!(pw = getpwnam_shadow(getenv("USER"))))
 			die("slock: getpwnam_shadow: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
-		rval = pw->pw_passwd;
+		hash = pw->pw_passwd;
 #else
 		die("slock: getpwuid: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 #endif /* __OpenBSD__ */
 	}
 #endif /* HAVE_SHADOW_H */
 
-	return rval;
+	return hash;
 }
 
 static void
 readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
-       const char *pws)
+       const char *hash)
 {
-	char buf[32], passwd[256], *encrypted;
+	char buf[32], passwd[256], *inputhash;
 	int num, screen, running, failure;
 	unsigned int len, color;
 	KeySym ksym;
@@ -161,10 +161,10 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			case XK_Return:
 				passwd[len] = 0;
 				errno = 0;
-				if (!(encrypted = crypt(passwd, pws)))
+				if (!(inputhash = crypt(passwd, hash)))
 					fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
 				else
-					running = !!strcmp(encrypted, pws);
+					running = !!strcmp(inputhash, hash);
 				if (running) {
 					XBell(dpy, 100);
 					failure = True;
@@ -292,7 +292,7 @@ main(int argc, char **argv) {
 	struct group *grp;
 	uid_t duid;
 	gid_t dgid;
-	const char *pws;
+	const char *hash;
 	Display *dpy;
 	int s, nlocks, nscreens;
 
@@ -320,8 +320,8 @@ main(int argc, char **argv) {
 	dontkillme();
 #endif
 
-	pws = getpw();
-	if (strlen(pws) < 2)
+	hash = gethash();
+	if (strlen(hash) < 2)
 		die("slock: failed to get user password hash.\n");
 
 	if (!(dpy = XOpenDisplay(NULL)))
@@ -370,7 +370,7 @@ main(int argc, char **argv) {
 	}
 
 	/* everything is now blank. Wait for the correct password */
-	readpw(dpy, &rr, locks, nscreens, pws);
+	readpw(dpy, &rr, locks, nscreens, hash);
 
 	return 0;
 }
