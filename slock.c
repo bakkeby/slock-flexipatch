@@ -33,18 +33,18 @@ enum {
 
 #include "config.h"
 
-typedef struct {
+struct lock {
 	int screen;
 	Window root, win;
 	Pixmap pmap;
 	unsigned long colors[NUMCOLS];
-} Lock;
+};
 
-static Lock **locks;
-static int nscreens;
-static Bool rr;
-static int rrevbase;
-static int rrerrbase;
+struct xrandr {
+	int active;
+	int evbase;
+	int errbase;
+};
 
 static void
 die(const char *errstr, ...)
@@ -123,7 +123,8 @@ getpw(void)
 }
 
 static void
-readpw(Display *dpy, const char *pws)
+readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
+       const char *pws)
 {
 	char buf[32], passwd[256], *encrypted;
 	int num, screen, running, failure;
@@ -194,7 +195,7 @@ readpw(Display *dpy, const char *pws)
 				}
 				oldc = color;
 			}
-		} else if (rr && ev.type == rrevbase + RRScreenChangeNotify) {
+		} else if (rr->active && ev.type == rr->evbase + RRScreenChangeNotify) {
 			XRRScreenChangeNotifyEvent *rre = (XRRScreenChangeNotifyEvent*)&ev;
 			for (screen = 0; screen < nscreens; screen++) {
 				if (locks[screen]->win == rre->window) {
@@ -207,44 +208,17 @@ readpw(Display *dpy, const char *pws)
 	}
 }
 
-static void
-unlockscreen(Display *dpy, Lock *lock)
-{
-	if(dpy == NULL || lock == NULL)
-		return;
-
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-	XFreeColors(dpy, DefaultColormap(dpy, lock->screen), lock->colors, NUMCOLS, 0);
-	XFreePixmap(dpy, lock->pmap);
-	XDestroyWindow(dpy, lock->win);
-
-	free(lock);
-}
-
-static void
-cleanup(Display *dpy)
-{
-	int s;
-
-	for (s = 0; s < nscreens; ++s)
-		unlockscreen(dpy, locks[s]);
-
-	free(locks);
-	XCloseDisplay(dpy);
-}
-
-static Lock *
-lockscreen(Display *dpy, int screen)
+static struct lock *
+lockscreen(Display *dpy, struct xrandr *rr, int screen)
 {
 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int i, ptgrab, kbgrab;
-	Lock *lock;
+	struct lock *lock;
 	XColor color, dummy;
 	XSetWindowAttributes wa;
 	Cursor invisible;
 
-	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(Lock))))
+	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(struct lock))))
 		return NULL;
 
 	lock->screen = screen;
@@ -281,7 +255,7 @@ lockscreen(Display *dpy, int screen)
 		/* input is grabbed: we can lock the screen */
 		if (ptgrab == GrabSuccess && kbgrab == GrabSuccess) {
 			XMapRaised(dpy, lock->win);
-			if (rr)
+			if (rr->active)
 				XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
 
 			XSelectInput(dpy, lock->root, SubstructureNotifyMask);
@@ -312,13 +286,15 @@ usage(void)
 
 int
 main(int argc, char **argv) {
+	struct xrandr rr;
+	struct lock **locks;
 	struct passwd *pwd;
 	struct group *grp;
 	uid_t duid;
 	gid_t dgid;
 	const char *pws;
 	Display *dpy;
-	int s, nlocks;
+	int s, nlocks, nscreens;
 
 	ARGBEGIN {
 	case 'v':
@@ -360,16 +336,14 @@ main(int argc, char **argv) {
 		die("slock: setuid: %s\n", strerror(errno));
 
 	/* check for Xrandr support */
-	rr = XRRQueryExtension(dpy, &rrevbase, &rrerrbase);
+	rr.active = XRRQueryExtension(dpy, &rr.evbase, &rr.errbase);
 
 	/* get number of screens in display "dpy" and blank them */
 	nscreens = ScreenCount(dpy);
-	if (!(locks = calloc(nscreens, sizeof(Lock *)))) {
-		XCloseDisplay(dpy);
+	if (!(locks = calloc(nscreens, sizeof(struct lock *))))
 		die("slock: out of memory\n");
-	}
 	for (nlocks = 0, s = 0; s < nscreens; s++) {
-		if ((locks[s] = lockscreen(dpy, s)) != NULL)
+		if ((locks[s] = lockscreen(dpy, &rr, s)) != NULL)
 			nlocks++;
 		else
 			break;
@@ -377,16 +351,13 @@ main(int argc, char **argv) {
 	XSync(dpy, 0);
 
 	/* did we manage to lock everything? */
-	if (nlocks != nscreens) {
-		cleanup(dpy);
+	if (nlocks != nscreens)
 		return 1;
-	}
 
 	/* run post-lock command */
 	if (argc > 0) {
 		switch (fork()) {
 		case -1:
-			cleanup(dpy);
 			die("slock: fork failed: %s\n", strerror(errno));
 		case 0:
 			if (close(ConnectionNumber(dpy)) < 0)
@@ -399,10 +370,7 @@ main(int argc, char **argv) {
 	}
 
 	/* everything is now blank. Wait for the correct password */
-	readpw(dpy, pws);
-
-	/* password ok, unlock everything and quit */
-	cleanup(dpy);
+	readpw(dpy, &rr, locks, nscreens, pws);
 
 	return 0;
 }
