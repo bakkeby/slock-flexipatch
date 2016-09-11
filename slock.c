@@ -103,14 +103,14 @@ gethash(void)
 #if HAVE_SHADOW_H
 	if (hash[0] == 'x' && hash[1] == '\0') {
 		struct spwd *sp;
-		if (!(sp = getspnam(getenv("USER"))))
+		if (!(sp = getspnam(pw->pw_name)))
 			die("slock: getspnam: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 		hash = sp->sp_pwdp;
 	}
 #else
 	if (hash[0] == '*' && hash[1] == '\0') {
 #ifdef __OpenBSD__
-		if (!(pw = getpwnam_shadow(getenv("USER"))))
+		if (!(pw = getpwuid_shadow(getuid())))
 			die("slock: getpwnam_shadow: cannot retrieve shadow entry (make sure to suid or sgid slock)\n");
 		hash = pw->pw_passwd;
 #else
