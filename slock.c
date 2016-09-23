@@ -321,8 +321,9 @@ main(int argc, char **argv) {
 #endif
 
 	hash = gethash();
-	if (strlen(hash) < 2)
-		die("slock: failed to get user password hash.\n");
+	errno = 0;
+	if (!crypt("", hash))
+		die("slock: crypt: %s\n", strerror(errno));
 
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("slock: cannot open display\n");
