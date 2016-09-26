@@ -137,10 +137,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 	running = 1;
 	failure = 0;
 
-	/* As "slock" stands for "Simple X display locker", the DPMS settings
-	 * had been removed and you can set it with "xset" or some other
-	 * utility. This way the user can easily set a customized DPMS
-	 * timeout. */
 	while (running && !XNextEvent(dpy, &ev)) {
 		if (ev.type == KeyPress) {
 			explicit_bzero(&buf, sizeof(buf));
