@@ -17,6 +17,18 @@ is executed after the screen has been locked.
 .It Fl v
 Print version information to stdout and exit.
 .El
+.Sh SECURITY CONSIDERATIONS
+To make sure a locked screen can not be bypassed by switching VTs
+or killing the X server with Ctrl+Alt+Backspace, it is recommended
+to disable both in
+.Xr xorg.conf 5
+for maximum security:
+.Bd -literal -offset left
+Section "ServerFlags"
+	Option "DontVTSwitch" "True"
+	Option "DontZap"      "True"
+EndSection
+.Ed
 .Sh EXAMPLES
 $
 .Nm
