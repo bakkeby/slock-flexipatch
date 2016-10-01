@@ -130,15 +130,15 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 {
 	XRRScreenChangeNotifyEvent *rre;
 	char buf[32], passwd[256], *inputhash;
-	int num, screen, running, failure;
+	int num, screen, running, failure, oldc;
 	unsigned int len, color;
 	KeySym ksym;
 	XEvent ev;
-	static int oldc = INIT;
 
 	len = 0;
 	running = 1;
 	failure = 0;
+	oldc = INIT;
 
 	while (running && !XNextEvent(dpy, &ev)) {
 		if (ev.type == KeyPress) {
