@@ -158,7 +158,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				continue;
 			switch (ksym) {
 			case XK_Return:
-				passwd[len] = 0;
+				passwd[len] = '\0';
 				errno = 0;
 				if (!(inputhash = crypt(passwd, hash)))
 					fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
@@ -177,7 +177,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				break;
 			case XK_BackSpace:
 				if (len)
-					passwd[len--] = 0;
+					passwd[len--] = '\0';
 				break;
 			default:
 				if (num && !iscntrl((int)buf[0]) &&
