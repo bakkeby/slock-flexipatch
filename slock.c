@@ -31,8 +31,6 @@ enum {
 	NUMCOLS
 };
 
-#include "config.h"
-
 struct lock {
 	int screen;
 	Window root, win;
@@ -45,6 +43,8 @@ struct xrandr {
 	int evbase;
 	int errbase;
 };
+
+#include "config.h"
 
 static void
 die(const char *errstr, ...)
