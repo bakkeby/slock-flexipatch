@@ -212,8 +212,10 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					break;
 				}
 			}
-		} else for (screen = 0; screen < nscreens; screen++)
-			XRaiseWindow(dpy, locks[screen]->win);
+		} else {
+			for (screen = 0; screen < nscreens; screen++)
+				XRaiseWindow(dpy, locks[screen]->win);
+		}
 	}
 }
 
