@@ -209,6 +209,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 						XResizeWindow(dpy, locks[screen]->win,
 						              rre->width, rre->height);
 					XClearWindow(dpy, locks[screen]->win);
+					break;
 				}
 			}
 		} else for (screen = 0; screen < nscreens; screen++)
