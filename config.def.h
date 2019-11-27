@@ -11,8 +11,25 @@ static const char *colorname[NUMCOLS] = {
 	#endif // CAPSCOLOR_PATCH
 	#if PAMAUTH_PATCH
 	[PAM] =    "#9400D3",   /* waiting for PAM */
-	#endif // CAPSCOLOR_PATCH
+	#endif // PAMAUTH_PATCH
 };
+
+#if XRESOURCES_PATCH
+/*
+ * Xresources preferences to load at startup
+ */
+ResourcePref resources[] = {
+		{ "color0",       STRING,  &colorname[INIT] },
+		{ "color4",       STRING,  &colorname[INPUT] },
+		{ "color1",       STRING,  &colorname[FAILED] },
+		#if CAPSCOLOR_PATCH
+		{ "color3",       STRING,  &colorname[CAPS] },
+		#endif // CAPSCOLOR_PATCH
+		#if PAMAUTH_PATCH
+		{ "color5",       STRING,  &colorname[PAM] },
+		#endif // PAMAUTH_PATCH
+};
+#endif // XRESOURCES_PATCH
 
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 1;

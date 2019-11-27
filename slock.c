@@ -514,6 +514,10 @@ main(int argc, char **argv) {
 	if (setuid(duid) < 0)
 		die("slock: setuid: %s\n", strerror(errno));
 
+	#if XRESOURCES_PATCH
+	config_init(dpy);
+	#endif // XRESOURCES_PATCH
+
 	/* check for Xrandr support */
 	rr.active = XRRQueryExtension(dpy, &rr.evbase, &rr.errbase);
 

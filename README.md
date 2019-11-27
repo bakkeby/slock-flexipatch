@@ -15,6 +15,8 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 
 ### Changelog:
 
+2019-11-27 - Added xresources patch
+
 2019-10-17 - Added capscolor, control clear, dpms, mediakeys, message, pam auth, quickcancel patches
 
 2019-10-16 - Introduced [flexipatch-finalizer](https://github.com/bakkeby/flexipatch-finalizer)
@@ -52,3 +54,6 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
    - [unlockscreen](https://tools.suckless.org/slock/patches/unlock_screen/)
       - this patch keeps the screen unlocked, but keeps the input locked
       - that is, the screen is not affected by slock, but users will not be able to interact with the X session unless they enter the correct password
+
+   - [xresources](https://tools.suckless.org/slock/patches/xresources/)
+      - this patch adds the ability to get colors via Xresources
