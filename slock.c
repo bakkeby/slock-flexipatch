@@ -29,6 +29,9 @@
 #if QUICKCANCEL_PATCH
 #include <time.h>
 #endif // QUICKCANCEL_PATCH
+#if DPMS_PATCH
+#include <X11/extensions/dpms.h>
+#endif // DPMS_PATCH
 
 #include "arg.h"
 #include "util.h"
@@ -542,7 +545,7 @@ main(int argc, char **argv) {
 		return 1;
 
 	#if DPMS_PATCH
-	/* DPMS-magic to disable the monitor */
+	/* DPMS magic to disable the monitor */
 	if (!DPMSCapable(dpy))
 		die("slock: DPMSCapable failed\n");
 	if (!DPMSEnable(dpy))
@@ -550,11 +553,11 @@ main(int argc, char **argv) {
 	if (!DPMSGetTimeouts(dpy, &standby, &suspend, &off))
 		die("slock: DPMSGetTimeouts failed\n");
 	if (!standby || !suspend || !off)
-		/* set values if there arent some */
-		standby = suspend = off = 300;
+		die("slock: at least one DPMS variable is zero\n");
+	if (!DPMSSetTimeouts(dpy, monitortime, monitortime, monitortime))
+		die("slock: DPMSSetTimeouts failed\n");
 
-	DPMSSetTimeouts(dpy, monitortime, monitortime, monitortime);
-	XFlush(dpy);
+	XSync(dpy, 0);
 	#endif // DPMS_PATCH
 
 	/* run post-lock command */
@@ -563,9 +566,6 @@ main(int argc, char **argv) {
 		case -1:
 			die("slock: fork failed: %s\n", strerror(errno));
 		case 0:
-			#if DPMS_PATCH
-			monitorreset(dpy, standby, suspend, off);
-			#endif // DPMS_PATCH
 			if (close(ConnectionNumber(dpy)) < 0)
 				die("slock: close: %s\n", strerror(errno));
 			execvp(argv[0], argv);
@@ -578,7 +578,8 @@ main(int argc, char **argv) {
 	readpw(dpy, &rr, locks, nscreens, hash);
 	#if DPMS_PATCH
 	/* reset DPMS values to inital ones */
-	monitorreset(dpy, standby, suspend, off);
+	DPMSSetTimeouts(dpy, standby, suspend, off);
+	XSync(dpy, 0);
 	#endif // DPMS_PATCH
 
 	return 0;
