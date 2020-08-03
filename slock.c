@@ -65,6 +65,9 @@ struct lock {
 	int screen;
 	Window root, win;
 	Pixmap pmap;
+	#if BLUR_PIXELATED_SCREEN_PATCH
+	Pixmap bgmap;
+	#endif // BLUR_PIXELATED_SCREEN_PATCH
 	unsigned long colors[NUMCOLS];
 };
 
@@ -321,9 +324,16 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			#endif // CAPSCOLOR_PATCH
 			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
+					#if BLUR_PIXELATED_SCREEN_PATCH
+					if (locks[screen]->bgmap)
+						XSetWindowBackgroundPixmap(dpy, locks[screen]->win, locks[screen]->bgmap);
+					else
+						XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[0]);
+					#else
 					XSetWindowBackground(dpy,
 					                     locks[screen]->win,
 					                     locks[screen]->colors[color]);
+					#endif // BLUR_PIXELATED_SCREEN_PATCH
 					XClearWindow(dpy, locks[screen]->win);
 					#if MESSAGE_PATCH
 					writemessage(dpy, locks[screen]->win, screen);
@@ -369,6 +379,10 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	lock->screen = screen;
 	lock->root = RootWindow(dpy, lock->screen);
 
+	#if BLUR_PIXELATED_SCREEN_PATCH
+	render_lock_image(dpy, lock, image);
+	#endif // BLUR_PIXELATED_SCREEN_PATCH
+
 	for (i = 0; i < NUMCOLS; i++) {
 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen),
 		                 colorname[i], &color, &dummy);
@@ -385,6 +399,10 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	                          CopyFromParent,
 	                          DefaultVisual(dpy, lock->screen),
 	                          CWOverrideRedirect | CWBackPixel, &wa);
+	#if BLUR_PIXELATED_SCREEN_PATCH
+	if (lock->bgmap)
+		XSetWindowBackgroundPixmap(dpy, lock->win, lock->bgmap);
+	#endif // BLUR_PIXELATED_SCREEN_PATCH
 	lock->pmap = XCreateBitmapFromData(dpy, lock->win, curs, 8, 8);
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap,
 	                                &color, &color, 0, 0);
@@ -527,6 +545,10 @@ main(int argc, char **argv) {
 		die("slock: setgid: %s\n", strerror(errno));
 	if (setuid(duid) < 0)
 		die("slock: setuid: %s\n", strerror(errno));
+
+	#if BLUR_PIXELATED_SCREEN_PATCH
+	create_lock_image(dpy);
+	#endif // BLUR_PIXELATED_SCREEN_PATCH
 
 	#if XRESOURCES_PATCH
 	config_init(dpy);

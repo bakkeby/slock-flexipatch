@@ -9,6 +9,13 @@
 
 /* Patches */
 
+/* This patch sets the lockscreen picture to a blured or pixelated screenshot.
+ * This patch depends on the Imlib2 library, uncomment the relevant line in
+ * config.mk when enabling this patch.
+ * https://tools.suckless.org/slock/patches/blur-pixelated-screen/
+ */
+#define BLUR_PIXELATED_SCREEN_PATCH 0
+
 /* This patch introduces an additional color to indicate the state of Caps Lock.
  * https://tools.suckless.org/slock/patches/capscolor/
  */

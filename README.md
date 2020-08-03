@@ -15,7 +15,7 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 
 ### Changelog:
 
-2020-08-03 - Added keypress_feedback patch
+2020-08-03 - Added keypress_feedback and blur_pixelated_screen patches
 
 2019-11-27 - Added xresources patch
 
@@ -24,6 +24,9 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 2019-10-16 - Introduced [flexipatch-finalizer](https://github.com/bakkeby/flexipatch-finalizer)
 
 ### Patches included:
+
+   - [blur_pixelated_screen](https://tools.suckless.org/slock/patches/blur-pixelated-screen/)
+      - sets the lockscreen picture to a blured or pixelated screenshot
 
    - [capscolor](https://tools.suckless.org/slock/patches/capscolor/)
       - adds an additional color to indicate the state of Caps Lock
