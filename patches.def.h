@@ -12,6 +12,7 @@
 /* This patch enables transparency for slock. This is intended to be combined
  * with a compositor that can blur the transparent background.
  * Extrapolated from https://github.com/khuedoan/slock
+ * https://github.com/khuedoan/slock/commit/5e7a95b50fd72efcf2a40d487278749a17cbb146
  */
 #define ALPHA_PATCH 0
 
