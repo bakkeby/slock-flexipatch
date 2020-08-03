@@ -1,3 +1,4 @@
+slock
 *.o
 dwm
 config.h
