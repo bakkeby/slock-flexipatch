@@ -9,6 +9,12 @@
 
 /* Patches */
 
+/* This patch enables transparency for slock. This is intended to be combined
+ * with a compositor that can blur the transparent background.
+ * Extrapolated from https://github.com/khuedoan/slock
+ */
+#define ALPHA_PATCH 0
+
 /* This patch sets the lockscreen picture to a blured or pixelated screenshot.
  * This patch depends on the Imlib2 library, uncomment the relevant line in
  * config.mk when enabling this patch.

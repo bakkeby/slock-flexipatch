@@ -1,6 +1,6 @@
 /* user and group to drop privileges to */
 static const char *user  = "nobody";
-static const char *group = "nogroup";
+static const char *group = "nogroup"; // use "nobody" for arch
 
 static const char *colorname[NUMCOLS] = {
 	[INIT] =   "black",     /* after initialization */
@@ -33,6 +33,11 @@ ResourcePref resources[] = {
 		#endif // PAMAUTH_PATCH
 };
 #endif // XRESOURCES_PATCH
+
+#if ALPHA_PATCH
+/* lock screen opacity */
+static const float alpha = 0.9;
+#endif // ALPHA_PATCH
 
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 1;

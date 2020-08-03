@@ -15,7 +15,7 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 
 ### Changelog:
 
-2020-08-03 - Added keypress_feedback and blur_pixelated_screen patches
+2020-08-03 - Added alpha, keypress_feedback and blur_pixelated_screen patches
 
 2019-11-27 - Added xresources patch
 
@@ -24,6 +24,10 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 2019-10-16 - Introduced [flexipatch-finalizer](https://github.com/bakkeby/flexipatch-finalizer)
 
 ### Patches included:
+
+   - [alpha](https://github.com/khuedoan/slock)
+      - enables transparency for slock
+      - intended to be combined with a compositor that can blur the transparent background
 
    - [blur_pixelated_screen](https://tools.suckless.org/slock/patches/blur-pixelated-screen/)
       - sets the lockscreen picture to a blured or pixelated screenshot
