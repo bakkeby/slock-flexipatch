@@ -20,6 +20,9 @@
 #include <X11/Xutil.h>
 
 #include "patches.h"
+#if KEYPRESS_FEEDBACK_PATCH
+#include <time.h>
+#endif // KEYPRESS_FEEDBACK_PATCH
 #if CAPSCOLOR_PATCH
 #include <X11/XKBlib.h>
 #endif // CAPSCOLOR_PATCH
@@ -52,6 +55,9 @@ enum {
 	#if PAMAUTH_PATCH
 	PAM,
 	#endif // PAMAUTH_PATCH
+	#if KEYPRESS_FEEDBACK_PATCH
+	BLOCKS,
+	#endif // KEYPRESS_FEEDBACK_PATCH
 	NUMCOLS
 };
 
@@ -301,6 +307,11 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					memcpy(passwd + len, buf, num);
 					len += num;
 				}
+				#if KEYPRESS_FEEDBACK_PATCH
+				if (blocks_enabled)
+					for (screen = 0; screen < nscreens; screen++)
+						draw_key_feedback(dpy, locks, screen);
+				#endif // KEYPRESS_FEEDBACK_PATCH
 				break;
 			}
 			#if CAPSCOLOR_PATCH
@@ -520,6 +531,11 @@ main(int argc, char **argv) {
 	#if XRESOURCES_PATCH
 	config_init(dpy);
 	#endif // XRESOURCES_PATCH
+
+	#if KEYPRESS_FEEDBACK_PATCH
+	time_t t;
+	srand((unsigned) time(&t));
+	#endif // KEYPRESS_FEEDBACK_PATCH
 
 	/* check for Xrandr support */
 	rr.active = XRRQueryExtension(dpy, &rr.evbase, &rr.errbase);

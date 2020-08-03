@@ -23,12 +23,18 @@
 #define CONTROLCLEAR_PATCH 0
 
 /* This patch interacts with the Display Power Signaling and automatically shuts down
-* the monitor after a configurable amount of seconds.
-* The monitor will automatically be activated by pressing a key or moving the mouse
-* and the password can be entered then.
-* https://tools.suckless.org/slock/patches/dpms/
-*/
+ * the monitor after a configurable amount of seconds.
+ * The monitor will automatically be activated by pressing a key or moving the mouse
+ * and the password can be entered then.
+ * https://tools.suckless.org/slock/patches/dpms/
+ */
 #define DPMS_PATCH 0
+
+/* Draws random blocks on the screen to display keypress feedback.
+ * https://tools.suckless.org/slock/patches/keypress-feedback/
+ * https://patch-diff.githubusercontent.com/raw/phenax/bslock/pull/2.diff
+ */
+#define KEYPRESS_FEEDBACK_PATCH 0
 
 /* This patch allows media keys to be used while the screen is locked. Allows for volume
  * to be adjusted or to skip to the next song without having to unlock the screen first.

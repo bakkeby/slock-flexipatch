@@ -12,6 +12,9 @@ static const char *colorname[NUMCOLS] = {
 	#if PAMAUTH_PATCH
 	[PAM] =    "#9400D3",   /* waiting for PAM */
 	#endif // PAMAUTH_PATCH
+	#if KEYPRESS_FEEDBACK_PATCH
+	[BLOCKS] = "#ffffff",   /* key feedback block */
+	#endif // KEYPRESS_FEEDBACK_PATCH
 };
 
 #if XRESOURCES_PATCH
@@ -43,6 +46,19 @@ static const int controlkeyclear = 0;
 /* time in seconds before the monitor shuts down */
 static const int monitortime = 5;
 #endif // DPMS_PATCH
+
+#if KEYPRESS_FEEDBACK_PATCH
+static short int blocks_enabled = 1; // 0 = don't show blocks
+static const int blocks_width = 0; // 0 = full width
+static const int blocks_height = 16;
+
+// position
+static const int blocks_x = 0;
+static const int blocks_y = 0;
+
+// Number of blocks
+static const int blocks_count = 10;
+#endif // KEYPRESS_FEEDBACK_PATCH
 
 #if MESSAGE_PATCH
 /* default message */

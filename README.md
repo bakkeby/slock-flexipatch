@@ -15,6 +15,8 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
 
 ### Changelog:
 
+2020-08-03 - Added keypress_feedback patch
+
 2019-11-27 - Added xresources patch
 
 2019-10-17 - Added capscolor, control clear, dpms, mediakeys, message, pam auth, quickcancel patches
@@ -33,6 +35,9 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
    - [dpms](https://tools.suckless.org/slock/patches/dpms/)
       - interacts with the Display Power Signaling and automatically shuts down the monitor after a configurable amount of seconds
       - the monitor will automatically be activated by pressing a key or moving the mouse and the password can be entered then
+
+   - [keypress_feedback](https://tools.suckless.org/slock/patches/keypress-feedback/)
+      - draws random blocks on the screen to display keypress feedback
 
    - [mediakeys](https://tools.suckless.org/slock/patches/mediakeys/)
       - allows media keys to be used while the screen is locked, e.g. adjust volume or skip to the next song without having to unlock the screen first
