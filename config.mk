@@ -10,7 +10,7 @@ MANPREFIX = ${PREFIX}/share/man
 X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
 
-# Uncomment for message patch / MESSAGE_PATCH
+# Uncomment for message patch / MESSAGE_PATCH / COLORMESSAGE_PATCH
 #XINERAMA=-lXinerama
 
 # Uncomment for pam auth patch / PAMAUTH_PATCH

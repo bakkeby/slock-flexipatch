@@ -76,7 +76,7 @@ static const int blocks_y = 0;
 static const int blocks_count = 10;
 #endif // KEYPRESS_FEEDBACK_PATCH
 
-#if MESSAGE_PATCH
+#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 /* default message */
 static const char * message = "Suckless: Software that sucks less.";
 
@@ -85,7 +85,7 @@ static const char * text_color = "#ffffff";
 
 /* text size (must be a valid size) */
 static const char * font_name = "6x10";
-#endif // MESSAGE_PATCH
+#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 
 #if PAMAUTH_PATCH
 /* PAM service that's used for authentication */

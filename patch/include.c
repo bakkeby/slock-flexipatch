@@ -3,7 +3,9 @@
 #include "blur_pixelated_screen.c"
 #endif
 
-#if MESSAGE_PATCH
+#if COLOR_MESSAGE_PATCH
+#include "colormessage.c"
+#elif MESSAGE_PATCH
 #include "message.c"
 #endif
 

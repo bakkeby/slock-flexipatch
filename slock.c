@@ -338,9 +338,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					                     locks[screen]->colors[color]);
 					#endif // BLUR_PIXELATED_SCREEN_PATCH
 					XClearWindow(dpy, locks[screen]->win);
-					#if MESSAGE_PATCH
+					#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 					writemessage(dpy, locks[screen]->win, screen);
-					#endif // MESSAGE_PATCH
+					#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 				}
 				oldc = color;
 			}
@@ -471,11 +471,11 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 static void
 usage(void)
 {
-	#if MESSAGE_PATCH
+	#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 	die("usage: slock [-v] [-f] [-m message] [cmd [arg ...]]\n");
 	#else
 	die("usage: slock [-v] [cmd [arg ...]]\n");
-	#endif // MESSAGE_PATCH
+	#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 }
 
 int
@@ -492,15 +492,15 @@ main(int argc, char **argv) {
 	#if DPMS_PATCH
 	CARD16 standby, suspend, off;
 	#endif // DPMS_PATCH
-	#if MESSAGE_PATCH
+	#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 	int i, count_fonts;
 	char **font_names;
-	#endif // MESSAGE_PATCH
+	#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 	ARGBEGIN {
 	case 'v':
 		fprintf(stderr, "slock-"VERSION"\n");
 		return 0;
-	#if MESSAGE_PATCH
+	#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 	case 'm':
 		message = EARGF(usage());
 		break;
@@ -512,7 +512,7 @@ main(int argc, char **argv) {
 			fprintf(stderr, "%s\n", *(font_names+i));
 		}
 		return 0;
-	#endif // MESSAGE_PATCH
+	#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 	default:
 		usage();
 	} ARGEND
@@ -576,9 +576,9 @@ main(int argc, char **argv) {
 		die("slock: out of memory\n");
 	for (nlocks = 0, s = 0; s < nscreens; s++) {
 		if ((locks[s] = lockscreen(dpy, &rr, s)) != NULL) {
-			#if MESSAGE_PATCH
+			#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 			writemessage(dpy, locks[s]->win, s);
-			#endif // MESSAGE_PATCH
+			#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 			nlocks++;
 		} else {
 			break;

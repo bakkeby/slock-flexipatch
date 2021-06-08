@@ -1,19 +1,32 @@
-Similar to [dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) this slock 1.4 (701aa9, 2017-03-25) project has a different take on patching. It uses preprocessor directives to decide whether or not to include a patch during build time. Essentially this means that this build, for better or worse, contains both the patched _and_ the original code. The aim being that you can select which patches to include and the build will contain that code and nothing more.
+Similar to [dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) this slock 1.4 (701aa9,
+2017-03-25) project has a different take on patching. It uses preprocessor directives to decide
+whether or not to include a patch during build time. Essentially this means that this build, for
+better or worse, contains both the patched _and_ the original code. The aim being that you can
+select which patches to include and the build will contain that code and nothing more.
 
-For example to include the `capscolor` patch then you would only need to flip this setting from 0 to 1 in [patches.h](https://github.com/bakkeby/slock-flexipatch/blob/master/patches.h):
+For example to include the `capscolor` patch then you would only need to flip this setting from 0
+to 1 in [patches.h](https://github.com/bakkeby/slock-flexipatch/blob/master/patches.h):
 ```c
 #define CAPSCOLOR_PATCH 1
 ```
 
-Once you have found out what works for you and what doesn't then you should be in a better position to choose patches should you want to start patching from scratch.
+Once you have found out what works for you and what doesn't then you should be in a better position
+to choose patches should you want to start patching from scratch.
 
-Alternatively if you have found the patches you want, but don't want the rest of the flexipatch entanglement on your plate then you may want to have a look at [flexipatch-finalizer](https://github.com/bakkeby/flexipatch-finalizer); a custom pre-processor tool that removes all the unused flexipatch code leaving you with a build that contains the patches you selected.
+Alternatively if you have found the patches you want, but don't want the rest of the flexipatch
+entanglement on your plate then you may want to have a look at
+[flexipatch-finalizer](https://github.com/bakkeby/flexipatch-finalizer); a custom pre-processor
+tool that removes all the unused flexipatch code leaving you with a build that contains the patches
+you selected.
 
-Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) for details on the slock tool, how to install it and how it works.
+Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) for details on the
+slock tool, how to install it and how it works.
 
 ---
 
 ### Changelog:
+
+2021-06-08 - Added the color message patch
 
 2020-08-03 - Added alpha, keypress_feedback and blur_pixelated_screen patches
 
@@ -35,19 +48,28 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
    - [capscolor](https://tools.suckless.org/slock/patches/capscolor/)
       - adds an additional color to indicate the state of Caps Lock
 
+   - [color-message](https://tools.suckless.org/slock/patches/colormessage/)
+      - based on the message patch this patch lets you add a message to your lock screen using
+        24-bit color ANSI escape codes
+
    - [control-clear](https://tools.suckless.org/slock/patches/control-clear/)
-      - with this patch slock will no longer change to the failure color if a control key is pressed while the buffer is empty
-      - this may be useful if, for example, you wake your monitor up by pressing a control key and don't want to spoil the detection of failed unlocking attempts
+      - with this patch slock will no longer change to the failure color if a control key is pressed
+        while the buffer is empty
+      - this may be useful if, for example, you wake your monitor up by pressing a control key and
+        don't want to spoil the detection of failed unlocking attempts
 
    - [dpms](https://tools.suckless.org/slock/patches/dpms/)
-      - interacts with the Display Power Signaling and automatically shuts down the monitor after a configurable amount of seconds
-      - the monitor will automatically be activated by pressing a key or moving the mouse and the password can be entered then
+      - interacts with the Display Power Signaling and automatically shuts down the monitor after a
+        configurable amount of seconds
+      - the monitor will automatically be activated by pressing a key or moving the mouse and the
+        password can be entered then
 
    - [keypress_feedback](https://tools.suckless.org/slock/patches/keypress-feedback/)
       - draws random blocks on the screen to display keypress feedback
 
    - [mediakeys](https://tools.suckless.org/slock/patches/mediakeys/)
-      - allows media keys to be used while the screen is locked, e.g. adjust volume or skip to the next song without having to unlock the screen first
+      - allows media keys to be used while the screen is locked, e.g. adjust volume or skip to the
+        next song without having to unlock the screen first
 
    - [message](https://tools.suckless.org/slock/patches/message/)
       - this patch lets you add a custom message to your lock screen
@@ -58,14 +80,17 @@ Refer to [https://tools.suckless.org/slock/](https://tools.suckless.org/slock/) 
    - [quickcancel](https://tools.suckless.org/slock/patches/quickcancel/)
       - cancel slock by moving the mouse within a certain time-period after slock started
       - the time-period can be defined in seconds with the setting timetocancel in the config.h
-      - this can be useful if you forgot to disable xautolock during an activity that requires no input (e.g. reading text, watching video, etc.)
+      - this can be useful if you forgot to disable xautolock during an activity that requires no
+        input (e.g. reading text, watching video, etc.)
 
    - [terminalkeys](https://tools.suckless.org/slock/patches/terminalkeys/)
-      - adds key commands that are commonly used in terminal applications (in particular the login prompt)
+      - adds key commands that are commonly used in terminal applications (in particular the login
+        prompt)
 
    - [unlockscreen](https://tools.suckless.org/slock/patches/unlock_screen/)
       - this patch keeps the screen unlocked, but keeps the input locked
-      - that is, the screen is not affected by slock, but users will not be able to interact with the X session unless they enter the correct password
+      - that is, the screen is not affected by slock, but users will not be able to interact with
+        the X session unless they enter the correct password
 
    - [xresources](https://tools.suckless.org/slock/patches/xresources/)
       - this patch adds the ability to get colors via Xresources
