@@ -17,6 +17,17 @@ static const char *colorname[NUMCOLS] = {
 	#endif // KEYPRESS_FEEDBACK_PATCH
 };
 
+#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
+/* default message */
+static const char * message = "Suckless: Software that sucks less.";
+
+/* text color */
+static const char * text_color = "#ffffff";
+
+/* text size (must be a valid size) */
+static const char * font_name = "6x10";
+#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
+
 #if XRESOURCES_PATCH
 /*
  * Xresources preferences to load at startup
@@ -31,6 +42,9 @@ ResourcePref resources[] = {
 		#if PAMAUTH_PATCH
 		{ "color5",       STRING,  &colorname[PAM] },
 		#endif // PAMAUTH_PATCH
+		#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
+		{ "color6",       STRING,  &text_color },
+		#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 };
 #endif // XRESOURCES_PATCH
 
@@ -75,17 +89,6 @@ static const int blocks_y = 0;
 // Number of blocks
 static const int blocks_count = 10;
 #endif // KEYPRESS_FEEDBACK_PATCH
-
-#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
-/* default message */
-static const char * message = "Suckless: Software that sucks less.";
-
-/* text color */
-static const char * text_color = "#ffffff";
-
-/* text size (must be a valid size) */
-static const char * font_name = "6x10";
-#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 
 #if PAMAUTH_PATCH
 /* PAM service that's used for authentication */

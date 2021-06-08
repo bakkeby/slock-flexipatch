@@ -38,7 +38,7 @@ writemessage(Display *dpy, Window win, int screen)
 	tab_size = 8 * XTextWidth(fontinfo, " ", 1);
 
 	XAllocNamedColor(dpy, DefaultColormap(dpy, screen),
-		 text_color, &color, &dummy);
+		text_color, &color, &dummy);
 
 	gr_values.font = fontinfo->fid;
 	gr_values.foreground = color.pixel;
