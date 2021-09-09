@@ -56,6 +56,17 @@ static const float alpha = 0.9;
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 1;
 
+#if AUTO_TIMEOUT_PATCH
+/* length of time (seconds) until */
+static const int timeoffset = 60;
+
+/* should [command] be run only once? */
+static const int runonce = 0;
+
+/* command to be run after [time] has passed */
+static const char *command = "doas poweroff";
+#endif // AUTO_TIMEOUT_PATCH
+
 #if FAILURE_COMMAND_PATCH
 /* number of failed password attempts until failcommand is executed.
    Set to 0 to disable */

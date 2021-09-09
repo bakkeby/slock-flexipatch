@@ -16,6 +16,11 @@
  */
 #define ALPHA_PATCH 0
 
+/* This patch allows for a command to be executed after a specified time of inactivity.
+ * https://tools.suckless.org/slock/patches/auto-timeout/
+ */
+#define AUTO_TIMEOUT_PATCH 0
+
 /* This patch sets the lockscreen picture to a blured or pixelated screenshot.
  * This patch depends on the Imlib2 library, uncomment the relevant line in
  * config.mk when enabling this patch.

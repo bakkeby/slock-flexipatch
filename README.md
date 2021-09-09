@@ -26,7 +26,7 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
-2021-09-09 - Added the failure-command and secret-password patches
+2021-09-09 - Added the auto-timeout, failure-command and secret-password patches
 
 2021-06-08 - Added the color message patch
 
@@ -43,6 +43,9 @@ slock tool, how to install it and how it works.
    - [alpha](https://github.com/khuedoan/slock)
       - enables transparency for slock
       - intended to be combined with a compositor that can blur the transparent background
+
+   - [auto-timeout](https://tools.suckless.org/slock/patches/auto-timeout/)
+      - allows for a command to be executed after a specified time of inactivity
 
    - [blur_pixelated_screen](https://tools.suckless.org/slock/patches/blur-pixelated-screen/)
       - sets the lockscreen picture to a blured or pixelated screenshot

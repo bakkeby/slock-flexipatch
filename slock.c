@@ -33,9 +33,9 @@
 #if MEDIAKEYS_PATCH
 #include <X11/XF86keysym.h>
 #endif // MEDIAKEYS_PATCH
-#if QUICKCANCEL_PATCH
+#if QUICKCANCEL_PATCH || AUTO_TIMEOUT_PATCH
 #include <time.h>
-#endif // QUICKCANCEL_PATCH
+#endif // QUICKCANCEL_PATCH / AUTO_TIMEOUT_PATCH
 #if DPMS_PATCH
 #include <X11/extensions/dpms.h>
 #endif // DPMS_PATCH
@@ -48,6 +48,10 @@ char *argv0;
 int failtrack = 0;
 #endif // FAILURE_COMMAND_PATCH
 
+#if AUTO_TIMEOUT_PATCH
+static time_t lasttouched;
+int runflag = 0;
+#endif // AUTO_TIMEOUT_PATCH
 #if QUICKCANCEL_PATCH
 static time_t locktime;
 #endif // QUICKCANCEL_PATCH
@@ -193,6 +197,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 	#endif // PAMAUTH_PATCH
 	int num, screen, running, failure, oldc;
 	unsigned int len, color;
+	#if AUTO_TIMEOUT_PATCH
+	time_t currenttime;
+	#endif // AUTO_TIMEOUT_PATCH
 	#if CAPSCOLOR_PATCH
 	int caps;
 	unsigned int indicators;
@@ -213,11 +220,23 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 		caps = indicators & 1;
 
 	#endif // CAPSCOLOR_PATCH
-	while (running && !XNextEvent(dpy, &ev)) {
+	#if AUTO_TIMEOUT_PATCH
+	while (running)
+	#else
+	while (running && !XNextEvent(dpy, &ev))
+	#endif // AUTO_TIMEOUT_PATCH
+	{
+		#if AUTO_TIMEOUT_PATCH
+		while (XPending(dpy)) {
+			XNextEvent(dpy, &ev);
+		#endif // AUTO_TIMEOUT_PATCH
 		#if QUICKCANCEL_PATCH
 		running = !((time(NULL) - locktime < timetocancel) && (ev.type == MotionNotify));
 		#endif // QUICKCANCEL_PATCH
 		if (ev.type == KeyPress) {
+			#if AUTO_TIMEOUT_PATCH
+			time(&lasttouched);
+			#endif // AUTO_TIMEOUT_PATCH
 			explicit_bzero(&buf, sizeof(buf));
 			num = XLookupString(&ev.xkey, buf, sizeof(buf), &ksym, 0);
 			if (IsKeypadKey(ksym)) {
@@ -394,6 +413,20 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			for (screen = 0; screen < nscreens; screen++)
 				XRaiseWindow(dpy, locks[screen]->win);
 		}
+
+		#if AUTO_TIMEOUT_PATCH
+		}
+
+		time(&currenttime);
+
+		if (currenttime >= lasttouched + timeoffset) {
+			if (!runonce || !runflag) {
+				runflag = 1;
+				system(command);
+			}
+			lasttouched = currenttime;
+		}
+		#endif // AUTO_TIMEOUT_PATCH
 	}
 }
 
@@ -406,6 +439,10 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	XColor color, dummy;
 	XSetWindowAttributes wa;
 	Cursor invisible;
+
+	#if AUTO_TIMEOUT_PATCH
+	time(&lasttouched);
+	#endif // AUTO_TIMEOUT_PATCH
 
 	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(struct lock))))
 		return NULL;
