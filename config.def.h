@@ -65,6 +65,13 @@ static const int failcount = 0;
 static const char *failcommand = "shutdown";
 #endif // FAILURE_COMMAND_PATCH
 
+#if SECRET_PASSWORD_PATCH
+static const secretpass scom[] = {
+	/* Password             command */
+	{ "shutdown",           "doas poweroff"},
+};
+#endif // SECRET_PASSWORD_PATCH
+
 #if BLUR_PIXELATED_SCREEN_PATCH
 /* Enable blur */
 #define BLUR

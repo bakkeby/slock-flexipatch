@@ -102,6 +102,11 @@
  */
 #define QUICKCANCEL_PATCH 0
 
+/* This patch allows for commands to be executed when the user enters special passwords.
+ * https://tools.suckless.org/slock/patches/secret-password/
+ */
+#define SECRET_PASSWORD_PATCH 0
+
 /* Adds key commands that are commonly used in terminal applications (in particular the
  * login prompt) to slock.
  * https://tools.suckless.org/slock/patches/terminalkeys/

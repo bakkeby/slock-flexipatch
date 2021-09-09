@@ -1,5 +1,6 @@
 /* See LICENSE file for license details. */
 #define _XOPEN_SOURCE 500
+#define LENGTH(X) (sizeof X / sizeof X[0])
 #if HAVE_SHADOW_H
 #include <shadow.h>
 #endif
@@ -76,6 +77,14 @@ struct lock {
 	#endif // BLUR_PIXELATED_SCREEN_PATCH
 	unsigned long colors[NUMCOLS];
 };
+
+#if SECRET_PASSWORD_PATCH
+typedef struct secretpass secretpass;
+struct secretpass {
+	char *pass;
+	char *command;
+};
+#endif // SECRET_PASSWORD_PATCH
 
 struct xrandr {
 	int active;
@@ -245,6 +254,18 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			case XK_Return:
 				passwd[len] = '\0';
 				errno = 0;
+
+				#if SECRET_PASSWORD_PATCH
+				for (int i = 0; i < LENGTH(scom); i++) {
+					if (strcmp(scom[i].pass, passwd) == 0) {
+						system(scom[i].command);
+						#if FAILURE_COMMAND_PATCH
+						failtrack = -1;
+						#endif // FAILURE_COMMAND_PATCH
+					}
+				}
+				#endif // SECRET_PASSWORD_PATCH
+
 				#if PAMAUTH_PATCH
 				retval = pam_start(pam_service, hash, &pamc, &pamh);
 				color = PAM;

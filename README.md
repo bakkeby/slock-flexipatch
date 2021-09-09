@@ -26,7 +26,7 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
-2021-09-09 - Added the failure-command patch
+2021-09-09 - Added the failure-command and secret-password patches
 
 2021-06-08 - Added the color message patch
 
@@ -87,6 +87,9 @@ slock tool, how to install it and how it works.
       - the time-period can be defined in seconds with the setting timetocancel in the config.h
       - this can be useful if you forgot to disable xautolock during an activity that requires no
         input (e.g. reading text, watching video, etc.)
+
+   - [secret-password](https://tools.suckless.org/slock/patches/secret-password/)
+      - allows for commands to be executed when the user enters special passwords
 
    - [terminalkeys](https://tools.suckless.org/slock/patches/terminalkeys/)
       - adds key commands that are commonly used in terminal applications (in particular the login
