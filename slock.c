@@ -43,6 +43,9 @@
 #include "util.h"
 
 char *argv0;
+#if FAILURE_COMMAND_PATCH
+int failtrack = 0;
+#endif // FAILURE_COMMAND_PATCH
 
 #if QUICKCANCEL_PATCH
 static time_t locktime;
@@ -272,6 +275,13 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				if (running) {
 					XBell(dpy, 100);
 					failure = 1;
+					#if FAILURE_COMMAND_PATCH
+					failtrack++;
+
+					if (failtrack >= failcount && failcount != 0) {
+						system(failcommand);
+					}
+					#endif // FAILURE_COMMAND_PATCH
 				}
 				explicit_bzero(&passwd, sizeof(passwd));
 				len = 0;

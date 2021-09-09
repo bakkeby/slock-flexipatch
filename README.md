@@ -26,6 +26,8 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
+2021-09-09 - Added the failure-command patch
+
 2021-06-08 - Added the color message patch
 
 2020-08-03 - Added alpha, keypress_feedback and blur_pixelated_screen patches
@@ -63,6 +65,9 @@ slock tool, how to install it and how it works.
         configurable amount of seconds
       - the monitor will automatically be activated by pressing a key or moving the mouse and the
         password can be entered then
+
+   - [failure-command](https://tools.suckless.org/slock/patches/failure-command/)
+      - allows for a command to be run after a specified number of incorrect attempts
 
    - [keypress_feedback](https://tools.suckless.org/slock/patches/keypress-feedback/)
       - draws random blocks on the screen to display keypress feedback

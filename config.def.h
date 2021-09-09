@@ -56,6 +56,15 @@ static const float alpha = 0.9;
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 1;
 
+#if FAILURE_COMMAND_PATCH
+/* number of failed password attempts until failcommand is executed.
+   Set to 0 to disable */
+static const int failcount = 0;
+
+/* command to be executed after [failcount] failed password attempts */
+static const char *failcommand = "shutdown";
+#endif // FAILURE_COMMAND_PATCH
+
 #if BLUR_PIXELATED_SCREEN_PATCH
 /* Enable blur */
 #define BLUR

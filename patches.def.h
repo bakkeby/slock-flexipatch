@@ -60,6 +60,11 @@
  */
 #define DPMS_PATCH 0
 
+/* This patch allows for a command to be run after a specified number of incorrect attempts.
+ * https://tools.suckless.org/slock/patches/failure-command/
+ */
+#define FAILURE_COMMAND_PATCH 0
+
 /* Draws random blocks on the screen to display keypress feedback.
  * https://tools.suckless.org/slock/patches/keypress-feedback/
  * https://patch-diff.githubusercontent.com/raw/phenax/bslock/pull/2.diff
