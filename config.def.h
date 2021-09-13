@@ -3,7 +3,7 @@ static const char *user  = "nobody";
 static const char *group = "nogroup"; // use "nobody" for arch
 
 static const char *colorname[NUMCOLS] = {
-	#if DWM_LOGO_PATCH
+	#if DWM_LOGO_PATCH && !BLUR_PIXELATED_SCREEN_PATCH
 	[BACKGROUND] =  "#2d2d2d", /* after initialization */
 	#endif // DWM_LOGO_PATCH
 	[INIT] =   "black",     /* after initialization */
@@ -56,7 +56,7 @@ static XRectangle rectangles[] = {
  * Xresources preferences to load at startup
  */
 ResourcePref resources[] = {
-		#if DWM_LOGO_PATCH
+		#if DWM_LOGO_PATCH && !BLUR_PIXELATED_SCREEN_PATCH
 		{ "color2",       STRING,  &colorname[BACKGROUND] },
 		#endif //DWM_LOGO_PATCH
 		{ "color0",       STRING,  &colorname[INIT] },
