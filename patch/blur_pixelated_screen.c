@@ -50,17 +50,17 @@ create_lock_image(Display *dpy)
 			pp = &pixel;
 			for (int j = 0; j < pixelSize && j < height; j++) {
 				for (int i = 0; i < pixelSize && i < width; i++) {
-					imlib_image_query_pixel(x+i,y+j,pp);
+					imlib_image_query_pixel(x + i, y + j, pp);
 					red += pixel.red;
 					green += pixel.green;
 					blue += pixel.blue;
 				}
 			}
-			red /= (pixelSize*pixelSize);
-			green /= (pixelSize*pixelSize);
-			blue /= (pixelSize*pixelSize);
-			imlib_context_set_color(red,green,blue,pixel.alpha);
-			imlib_image_fill_rectangle(x,y,pixelSize,pixelSize);
+			red /= (pixelSize * pixelSize);
+			green /= (pixelSize * pixelSize);
+			blue /= (pixelSize * pixelSize);
+			imlib_context_set_color(red, green, blue, pixel.alpha);
+			imlib_image_fill_rectangle(x, y, pixelSize, pixelSize);
 			red = 0;
 			green = 0;
 			blue = 0;

@@ -26,6 +26,8 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
+2021-09-13 - Added the dwm logo patch
+
 2021-09-09 - Added the auto-timeout, failure-command and secret-password patches
 
 2021-06-08 - Added the color message patch
@@ -68,6 +70,9 @@ slock tool, how to install it and how it works.
         configurable amount of seconds
       - the monitor will automatically be activated by pressing a key or moving the mouse and the
         password can be entered then
+
+   - [dwmlogo](https://tools.suckless.org/slock/patches/dwmlogo/)
+      - draws the dwm logo which changes color based on the state
 
    - [failure-command](https://tools.suckless.org/slock/patches/failure-command/)
       - allows for a command to be run after a specified number of incorrect attempts

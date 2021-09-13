@@ -65,6 +65,11 @@
  */
 #define DPMS_PATCH 0
 
+/* This patch draws the dwm logo which changes color based on the state.
+ * https://tools.suckless.org/slock/patches/dwmlogo/
+ */
+#define DWM_LOGO_PATCH 0
+
 /* This patch allows for a command to be run after a specified number of incorrect attempts.
  * https://tools.suckless.org/slock/patches/failure-command/
  */

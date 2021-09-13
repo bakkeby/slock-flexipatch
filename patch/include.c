@@ -9,6 +9,10 @@
 #include "message.c"
 #endif
 
+#if DWM_LOGO_PATCH
+#include "dwmlogo.c"
+#endif
+
 #if KEYPRESS_FEEDBACK_PATCH
 #include "keypress_feedback.c"
 #endif

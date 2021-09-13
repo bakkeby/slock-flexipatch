@@ -1,3 +1,4 @@
+#include <X11/Xresource.h>
 #include <math.h>
 
 int
@@ -47,6 +48,6 @@ config_init(Display *dpy)
 		return;
 
 	db = XrmGetStringDatabase(resm);
-	for (p = resources; p < resources + LEN(resources); p++)
+	for (p = resources; p < resources + LENGTH(resources); p++)
 		resource_load(db, p->name, p->type, p->dst);
 }

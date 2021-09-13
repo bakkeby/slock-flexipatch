@@ -3,6 +3,9 @@ static const char *user  = "nobody";
 static const char *group = "nogroup"; // use "nobody" for arch
 
 static const char *colorname[NUMCOLS] = {
+	#if DWM_LOGO_PATCH
+	[BACKGROUND] =  "#2d2d2d", /* after initialization */
+	#endif // DWM_LOGO_PATCH
 	[INIT] =   "black",     /* after initialization */
 	[INPUT] =  "#005577",   /* during input */
 	[FAILED] = "#CC3333",   /* wrong password */
@@ -28,11 +31,34 @@ static const char * text_color = "#ffffff";
 static const char * font_name = "6x10";
 #endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 
+#if DWM_LOGO_PATCH
+/* insert grid pattern with scale 1:1, the size can be changed with logosize */
+static const int logosize = 75;
+static const int logow = 12;   /* grid width and height for right center alignment*/
+static const int logoh = 6;
+
+static XRectangle rectangles[] = {
+   /* x    y   w   h */
+   { 0,    3,  1,  3 },
+   { 1,    3,  2,  1 },
+   { 0,    5,  8,  1 },
+   { 3,    0,  1,  5 },
+   { 5,    3,  1,  2 },
+   { 7,    3,  1,  2 },
+   { 8,    3,  4,  1 },
+   { 9,    4,  1,  2 },
+   { 11,   4,  1,  2 },
+};
+#endif // DWM_LOGO_PATCH
+
 #if XRESOURCES_PATCH
 /*
  * Xresources preferences to load at startup
  */
 ResourcePref resources[] = {
+		#if DWM_LOGO_PATCH
+		{ "color2",       STRING,  &colorname[BACKGROUND] },
+		#endif //DWM_LOGO_PATCH
 		{ "color0",       STRING,  &colorname[INIT] },
 		{ "color4",       STRING,  &colorname[INPUT] },
 		{ "color1",       STRING,  &colorname[FAILED] },
@@ -87,11 +113,11 @@ static const secretpass scom[] = {
 /* Enable blur */
 #define BLUR
 /* Set blur radius */
-static const int blurRadius=5;
+static const int blurRadius = 5;
 /* Enable Pixelation */
 //#define PIXELATION
 /* Set pixelation radius */
-static const int pixelSize=10;
+static const int pixelSize = 10;
 #endif // BLUR_PIXELATED_SCREEN_PATCH
 
 #if CONTROLCLEAR_PATCH
