@@ -93,6 +93,14 @@ typedef struct {
 } ResourcePref;
 #endif // XRESOURCES_PATCH
 
+#if SECRET_PASSWORD_PATCH
+typedef struct secretpass secretpass;
+struct secretpass {
+	char *pass;
+	char *command;
+};
+#endif // SECRET_PASSWORD_PATCH
+
 #include "config.h"
 
 struct lock {
@@ -111,14 +119,6 @@ struct lock {
 	XRectangle rectangles[LENGTH(rectangles)];
 	#endif // DWM_LOGO_PATCH
 };
-
-#if SECRET_PASSWORD_PATCH
-typedef struct secretpass secretpass;
-struct secretpass {
-	char *pass;
-	char *command;
-};
-#endif // SECRET_PASSWORD_PATCH
 
 struct xrandr {
 	int active;
@@ -306,7 +306,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				#if SECRET_PASSWORD_PATCH
 				for (int i = 0; i < LENGTH(scom); i++) {
 					if (strcmp(scom[i].pass, passwd) == 0) {
-						system(scom[i].command);
+						if (system(scom[i].command));
 						#if FAILURE_COMMAND_PATCH
 						failtrack = -1;
 						#endif // FAILURE_COMMAND_PATCH
