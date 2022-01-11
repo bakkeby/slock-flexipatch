@@ -458,6 +458,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			}
 			lasttouched = currenttime;
 		}
+		usleep(50); // artificial sleep for 50ms
 		#endif // AUTO_TIMEOUT_PATCH
 	}
 }
