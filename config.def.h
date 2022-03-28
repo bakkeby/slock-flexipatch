@@ -31,6 +31,11 @@ static const char * text_color = "#ffffff";
 static const char * font_name = "6x10";
 #endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 
+#if BACKGROUND_IMAGE_PATCH
+/* Background image path, should be available to the user above */
+static const char * background_image = "";
+#endif // BACKGROUND_IMAGE_PATCH
+
 #if DWM_LOGO_PATCH
 /* insert grid pattern with scale 1:1, the size can be changed with logosize */
 static const int logosize = 75;
@@ -57,19 +62,24 @@ static XRectangle rectangles[] = {
  */
 ResourcePref resources[] = {
 		#if DWM_LOGO_PATCH && !BLUR_PIXELATED_SCREEN_PATCH
-		{ "color2",       STRING,  &colorname[BACKGROUND] },
+		{ "background",   STRING,  &colorname[BACKGROUND] },
 		#endif //DWM_LOGO_PATCH
-		{ "color0",       STRING,  &colorname[INIT] },
-		{ "color4",       STRING,  &colorname[INPUT] },
-		{ "color1",       STRING,  &colorname[FAILED] },
+		#if BACKGROUND_IMAGE_PATCH
+		{ "bg_image",     STRING,  &background_image },
+		#endif // BACKGROUND_IMAGE_PATCH
+		{ "locked",       STRING,  &colorname[INIT] },
+		{ "input",        STRING,  &colorname[INPUT] },
+		{ "failed",       STRING,  &colorname[FAILED] },
 		#if CAPSCOLOR_PATCH
-		{ "color3",       STRING,  &colorname[CAPS] },
+		{ "capslock",     STRING,  &colorname[CAPS] },
 		#endif // CAPSCOLOR_PATCH
 		#if PAMAUTH_PATCH
-		{ "color5",       STRING,  &colorname[PAM] },
+		{ "pamauth",      STRING,  &colorname[PAM] },
 		#endif // PAMAUTH_PATCH
 		#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
-		{ "color6",       STRING,  &text_color },
+		{ "message",      STRING,  &message },
+		{ "text_color",   STRING,  &text_color },
+		{ "font_name",    STRING,  &font_name },
 		#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 };
 #endif // XRESOURCES_PATCH

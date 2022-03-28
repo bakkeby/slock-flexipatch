@@ -26,6 +26,8 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
+2022-03-28 - Added the background image patch
+
 2021-09-13 - Added the dwm logo patch
 
 2021-09-09 - Added the auto-timeout, failure-command and secret-password patches
@@ -48,6 +50,9 @@ slock tool, how to install it and how it works.
 
    - [auto-timeout](https://tools.suckless.org/slock/patches/auto-timeout/)
       - allows for a command to be executed after a specified time of inactivity
+
+   - [background_image](https://tools.suckless.org/slock/patches/background-image/)
+      - sets the lockscreen picture to a background image
 
    - [blur_pixelated_screen](https://tools.suckless.org/slock/patches/blur-pixelated-screen/)
       - sets the lockscreen picture to a blured or pixelated screenshot

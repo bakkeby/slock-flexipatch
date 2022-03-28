@@ -21,9 +21,18 @@
  */
 #define AUTO_TIMEOUT_PATCH 0
 
+/* This patch adds a background image for slock.
+ * This patch depends on the Imlib2 library, uncomment the relevant line in
+ * config.mk when enabling this patch.
+ * This patch is a variant of the blur pixelated screen patch and takes precedence over that.
+ * https://tools.suckless.org/slock/patches/background-image/
+ */
+#define BACKGROUND_IMAGE_PATCH 0
+
 /* This patch sets the lockscreen picture to a blured or pixelated screenshot.
  * This patch depends on the Imlib2 library, uncomment the relevant line in
  * config.mk when enabling this patch.
+ * The background image patch takes precedence over this patch.
  * https://tools.suckless.org/slock/patches/blur-pixelated-screen/
  */
 #define BLUR_PIXELATED_SCREEN_PATCH 0

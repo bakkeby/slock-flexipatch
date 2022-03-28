@@ -17,7 +17,7 @@ X11LIB = /usr/X11R6/lib
 # Uncomment for pam auth patch / PAMAUTH_PATCH
 #PAM=-lpam
 
-# Uncomment for blur pixelated screen patch / BLUR_PIXELATED_SCREEN_PATCH
+# Uncomment for blur pixelated screen and background image patches / BLUR_PIXELATED_SCREEN_PATCH, BACKGROUND_IMAGE_PATCH
 #IMLIB=-lImlib2
 
 # includes and libs
