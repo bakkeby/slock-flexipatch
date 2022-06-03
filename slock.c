@@ -318,9 +318,20 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				retval = pam_start(pam_service, hash, &pamc, &pamh);
 				color = PAM;
 				for (screen = 0; screen < nscreens; screen++) {
+					#if DWM_LOGO_PATCH
+					drawlogo(dpy, locks[screen], color);
+					#elif BLUR_PIXELATED_SCREEN_PATCH || BACKGROUND_IMAGE_PATCH
+					if (locks[screen]->bgmap)
+						XSetWindowBackgroundPixmap(dpy, locks[screen]->win, locks[screen]->bgmap);
+					else
+						XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[0]);
+					XClearWindow(dpy, locks[screen]->win);
+					#else
 					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
 					XClearWindow(dpy, locks[screen]->win);
 					XRaiseWindow(dpy, locks[screen]->win);
+					#endif // BLUR_PIXELATED_SCREEN_PATCH
+
 				}
 				XSync(dpy, False);
 
