@@ -653,7 +653,7 @@ main(int argc, char **argv) {
 	#endif // MESSAGE_PATCH | COLOR_MESSAGE_PATCH
 	ARGBEGIN {
 	case 'v':
-		fprintf(stderr, "slock-"VERSION"\n");
+		puts("slock-"VERSION);
 		return 0;
 	#if MESSAGE_PATCH || COLOR_MESSAGE_PATCH
 	case 'm':
