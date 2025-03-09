@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <spawn.h>
 #include <sys/types.h>
 #include <X11/extensions/Xrandr.h>
 #include <X11/keysym.h>
@@ -763,15 +764,12 @@ main(int argc, char **argv) {
 
 	/* run post-lock command */
 	if (argc > 0) {
-		switch (fork()) {
-		case -1:
-			die("slock: fork failed: %s\n", strerror(errno));
-		case 0:
-			if (close(ConnectionNumber(dpy)) < 0)
-				die("slock: close: %s\n", strerror(errno));
-			execvp(argv[0], argv);
-			fprintf(stderr, "slock: execvp %s: %s\n", argv[0], strerror(errno));
-			_exit(1);
+		pid_t pid;
+		extern char **environ;
+		int err = posix_spawnp(&pid, argv[0], NULL, NULL, argv, environ);
+		if (err) {
+			die("slock: failed to execute post-lock command: %s: %s\n",
+			    argv[0], strerror(err));
 		}
 	}
 
