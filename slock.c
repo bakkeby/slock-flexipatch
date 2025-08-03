@@ -261,7 +261,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			XNextEvent(dpy, &ev);
 		#endif // AUTO_TIMEOUT_PATCH
 		#if QUICKCANCEL_PATCH
-		running = !((time(NULL) - locktime < timetocancel) && (ev.type == MotionNotify));
+		running = !((time(NULL) - locktime < timetocancel) && (ev.type == MotionNotify || ev.type == KeyPress));
 		#endif // QUICKCANCEL_PATCH
 		if (ev.type == KeyPress) {
 			#if AUTO_TIMEOUT_PATCH
