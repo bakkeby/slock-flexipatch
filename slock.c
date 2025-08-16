@@ -403,6 +403,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				{
 					memcpy(passwd + len, buf, num);
 					len += num;
+				} else if (buf[0] == '\025') { /* ctrl-u clears input */
+					explicit_bzero(&passwd, sizeof(passwd));
+					len = 0;
 				}
 				#if KEYPRESS_FEEDBACK_PATCH
 				if (blocks_enabled)
