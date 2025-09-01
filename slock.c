@@ -393,13 +393,11 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			#endif // MEDIAKEYS_PATCH
 			default:
 				#if CONTROLCLEAR_PATCH
-				if (controlkeyclear && iscntrl((int)buf[0]))
+				if (controlkeyclear && iscntrl((int)buf[0]) && !num)
 					continue;
-				if (num && (len + num < sizeof(passwd)))
-				#else
+				#endif // CONTROLCLEAR_PATCH
 				if (num && !iscntrl((int)buf[0]) &&
 				    (len + num < sizeof(passwd)))
-				#endif // CONTROLCLEAR_PATCH
 				{
 					memcpy(passwd + len, buf, num);
 					len += num;
