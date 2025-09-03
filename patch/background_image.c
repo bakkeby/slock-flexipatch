@@ -21,6 +21,12 @@ create_lock_image(Display *dpy)
 {
 	/* Load picture */
 	Imlib_Image buffer = imlib_load_image(background_image);
+
+	if (!buffer) {
+		fprintf(stderr, "Failed to load background image: %s\n", background_image);
+		return;
+	}
+
 	imlib_context_set_image(buffer);
 	int background_image_width = imlib_image_get_width();
 	int background_image_height = imlib_image_get_height();
