@@ -8,6 +8,9 @@ static const char *colorname[NUMCOLS] = {
 	#endif // DWM_LOGO_PATCH
 	[INIT] =   "black",     /* after initialization */
 	[INPUT] =  "#005577",   /* during input */
+	#if ALTERNATE_COLORS_PATCH
+	[INPUT_ALT] = "#227799", /* during input, second color */
+	#endif // ALTERNATE_COLORS_PATCH
 	[FAILED] = "#CC3333",   /* wrong password */
 	#if CAPSCOLOR_PATCH
 	[CAPS] =   "red",       /* CapsLock on */

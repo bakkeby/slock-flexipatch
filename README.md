@@ -26,6 +26,8 @@ slock tool, how to install it and how it works.
 
 ### Changelog:
 
+2026-01-03 - Added the alternate colors patch
+
 2025-11-15 - Added the visual unlock patch
 
 2022-03-28 - Added the background image patch
@@ -49,6 +51,10 @@ slock tool, how to install it and how it works.
    - [alpha](https://github.com/khuedoan/slock)
       - enables transparency for slock
       - intended to be combined with a compositor that can blur the transparent background
+
+   - [alternate_colors](https://tools.suckless.org/slock/patches/alternate-colors)
+      - Toggle screen color between two shades of blue during password input to get some feedback
+      - Alternative to the random boxes drawing to get keyboard feedback
 
    - [auto-timeout](https://tools.suckless.org/slock/patches/auto-timeout/)
       - allows for a command to be executed after a specified time of inactivity

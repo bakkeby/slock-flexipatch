@@ -70,6 +70,9 @@ enum {
 	#endif // DWM_LOGO_PATCH
 	INIT,
 	INPUT,
+	#if ALTERNATE_COLORS_PATCH
+	INPUT_ALT,
+	#endif // ALTERNATE_COLORS_PATCH
 	FAILED,
 	#if CAPSCOLOR_PATCH
 	CAPS,
@@ -417,9 +420,17 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				break;
 			}
 			#if CAPSCOLOR_PATCH
+			#if ALTERNATE_COLORS_PATCH
+			color = len ? (caps ? CAPS : (len%2 ? INPUT : INPUT_ALT)) : (failure || failonclear ? FAILED : INIT);
+			#else
 			color = len ? (caps ? CAPS : INPUT) : (failure || failonclear ? FAILED : INIT);
+			#endif // ALTERNATE_COLORS_PATCH
+			#else
+			#if ALTERNATE_COLORS_PATCH
+			color = len ? (len%2 ? INPUT : INPUT_ALT) : ((failure || failonclear) ? FAILED : INIT);
 			#else
 			color = len ? INPUT : ((failure || failonclear) ? FAILED : INIT);
+			#endif  // ALTERNATE_COLORS_PATCH
 			#endif // CAPSCOLOR_PATCH
 			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
@@ -718,6 +729,7 @@ main(int argc, char **argv) {
 		die("slock: crypt: %s\n", strerror(errno));
 	#endif // PAMAUTH_PATCH
 
+
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("slock: cannot open display\n");
 
@@ -799,6 +811,7 @@ main(int argc, char **argv) {
 
 	/* everything is now blank. Wait for the correct password */
 	readpw(dpy, &rr, locks, nscreens, hash);
+
 	#if DPMS_PATCH
 	/* reset DPMS values to inital ones */
 	DPMSSetTimeouts(dpy, standby, suspend, off);

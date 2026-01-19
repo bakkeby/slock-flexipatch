@@ -16,6 +16,12 @@
  */
 #define ALPHA_PATCH 0
 
+/* Toggle screen color between two shades of blue during password input to get some feedback,
+ * an option when not wanting to add random squares for a similar purpose
+ * https://tools.suckless.org/slock/patches/alternate-colors
+ */
+#define ALTERNATE_COLORS_PATCH 0
+
 /* This patch allows for a command to be executed after a specified time of inactivity.
  * https://tools.suckless.org/slock/patches/auto-timeout/
  */
