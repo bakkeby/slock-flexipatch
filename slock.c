@@ -400,7 +400,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				if (controlkeyclear && iscntrl((int)buf[0]) && !num)
 					continue;
 				#endif // CONTROLCLEAR_PATCH
-				if (num && !iscntrl((int)buf[0]) &&
+				if (num && !iscntrl((unsigned char)buf[0]) &&
 				    (len + num < sizeof(passwd)))
 				{
 					memcpy(passwd + len, buf, num);
