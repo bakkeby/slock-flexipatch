@@ -786,6 +786,7 @@ main(int argc, char **argv) {
 	XSync(dpy, 0);
 	#endif // DPMS_PATCH
 
+	#if LEGACY_POST_LOCK_COMMAND_PATCH
 	/* run post-lock command */
 	if (argc > 0) {
 		pid_t pid;
@@ -796,6 +797,7 @@ main(int argc, char **argv) {
 			    argv[0], strerror(err));
 		}
 	}
+	#endif // LEGACY_POST_LOCK_COMMAND_PATCH
 
 	/* everything is now blank. Wait for the correct password */
 	readpw(dpy, &rr, locks, nscreens, hash);

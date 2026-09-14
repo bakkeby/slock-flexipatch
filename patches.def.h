@@ -90,6 +90,17 @@
  */
 #define KEYPRESS_FEEDBACK_PATCH 0
 
+/* The support for running post lock commands was removed with commit 65cb721 on the
+ * 5th of September, 2026.
+ *
+ * The command was used for example to suspend to ram. Support for this was removed
+ * because on Linux running this command inherits the OOM killer immunity, which could
+ * be abused by another local user on the same machine (abusing resources).
+ *
+ * This patch adds the functionality back in, should the user desire it.
+ */
+#define LEGACY_POST_LOCK_COMMAND_PATCH 0
+
 /* This patch allows media keys to be used while the screen is locked. Allows for volume
  * to be adjusted or to skip to the next song without having to unlock the screen first.
  * https://tools.suckless.org/slock/patches/mediakeys/
